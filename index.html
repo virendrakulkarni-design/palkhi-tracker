@@ -1,0 +1,1314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>माउली · Live Palkhi Tracker</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Yatra+One&family=Tiro+Devanagari+Marathi:ital@0;1&family=Poppins:wght@300;400;500;600;700&family=Noto+Sans+Devanagari:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin></script>
+<style>
+  /* ===== THEME DEFINITIONS ===== */
+
+  /* Theme 1: Saffron Wari — warm deep maroon & marigold (default) */
+  :root, [data-theme="saffron"] {
+    --bg-grad: linear-gradient(180deg, #1A0A10 0%, #3D1420 45%, #1A0A10 100%);
+    --bg-orb1: radial-gradient(circle at 15% 0%, rgba(232,149,43,0.13), transparent 45%);
+    --bg-orb2: radial-gradient(circle at 90% 10%, rgba(90,120,80,0.12), transparent 40%);
+    --maroon-deep:#5C1F2E;
+    --maroon-darker:#33111A;
+    --maroon-panel:#4A1A26;
+    --accent:#E8952B;
+    --accent-light:#F5C065;
+    --accent2:#5C7A50;
+    --accent2-light:#8AAB7C;
+    --ivory:#F4EBDA;
+    --ivory-dim:#D9CBAE;
+    --ink:#2A1810;
+    --line: rgba(244,235,218,0.14);
+    --card-bg: linear-gradient(135deg,#4A1A26,rgba(74,26,38,0.5));
+    --card-orb: rgba(232,149,43,0.18);
+    --halt-note-bg: #33111A;
+    --panel-bg: rgba(244,235,218,0.04);
+    --amenity-bg: rgba(90,120,80,0.08);
+    --amenity-border: rgba(138,171,124,0.25);
+    --twin-bg: rgba(90,120,80,0.10);
+    --badge-glow: rgba(138,171,124,0.5);
+  }
+
+  /* Theme 2: Vitthal Blue — deep indigo, the sky above Pandharpur */
+  [data-theme="vitthal"] {
+    --bg-grad: linear-gradient(180deg,#0A0F2E 0%,#162057 45%,#0A0F2E 100%);
+    --bg-orb1: radial-gradient(circle at 15% 0%,rgba(100,149,237,0.13),transparent 45%);
+    --bg-orb2: radial-gradient(circle at 90% 10%,rgba(255,215,0,0.10),transparent 40%);
+    --maroon-deep:#1E2D6B;
+    --maroon-darker:#0D1640;
+    --maroon-panel:#1A2760;
+    --accent:#6B9BE8;
+    --accent-light:#FFD700;
+    --accent2:#4A6FA5;
+    --accent2-light:#90B8F8;
+    --ivory:#E8EEF8;
+    --ivory-dim:#A8BAD8;
+    --ink:#050C28;
+    --line: rgba(100,149,237,0.18);
+    --card-bg: linear-gradient(135deg,#1A2760,rgba(26,39,96,0.5));
+    --card-orb: rgba(107,155,232,0.16);
+    --halt-note-bg: #0D1640;
+    --panel-bg: rgba(100,149,237,0.05);
+    --amenity-bg: rgba(255,215,0,0.06);
+    --amenity-border: rgba(255,215,0,0.2);
+    --twin-bg: rgba(100,149,237,0.08);
+    --badge-glow: rgba(144,184,248,0.5);
+  }
+
+  /* Theme 3: Chandra Ratra — silver moonlit night */
+  [data-theme="chandra"] {
+    --bg-grad: linear-gradient(180deg,#0E0E14 0%,#1C1C2A 45%,#0E0E14 100%);
+    --bg-orb1: radial-gradient(circle at 15% 0%,rgba(200,200,255,0.10),transparent 45%);
+    --bg-orb2: radial-gradient(circle at 90% 10%,rgba(180,160,255,0.10),transparent 40%);
+    --maroon-deep:#22223A;
+    --maroon-darker:#14142A;
+    --maroon-panel:#1E1E34;
+    --accent:#B8B8FF;
+    --accent-light:#E8E0FF;
+    --accent2:#7B6FAF;
+    --accent2-light:#C4B8F0;
+    --ivory:#EEF0FF;
+    --ivory-dim:#9898C0;
+    --ink:#0A0A18;
+    --line: rgba(184,184,255,0.14);
+    --card-bg: linear-gradient(135deg,#1E1E34,rgba(30,30,52,0.55));
+    --card-orb: rgba(184,184,255,0.12);
+    --halt-note-bg: #14142A;
+    --panel-bg: rgba(184,184,255,0.04);
+    --amenity-bg: rgba(123,111,175,0.10);
+    --amenity-border: rgba(196,184,240,0.22);
+    --twin-bg: rgba(123,111,175,0.10);
+    --badge-glow: rgba(196,184,240,0.5);
+  }
+
+  /* Theme 4: Tulsi Van — deep forest green, tulsi groves */
+  [data-theme="tulsi"] {
+    --bg-grad: linear-gradient(180deg,#061209 0%,#0F2914 45%,#061209 100%);
+    --bg-orb1: radial-gradient(circle at 15% 0%,rgba(100,180,80,0.12),transparent 45%);
+    --bg-orb2: radial-gradient(circle at 90% 10%,rgba(232,180,43,0.10),transparent 40%);
+    --maroon-deep:#133520;
+    --maroon-darker:#081A0F;
+    --maroon-panel:#0F2918;
+    --accent:#5CB85C;
+    --accent-light:#A8E06A;
+    --accent2:#C8960C;
+    --accent2-light:#F0C040;
+    --ivory:#E8F5E0;
+    --ivory-dim:#A8C898;
+    --ink:#030D05;
+    --line: rgba(100,180,80,0.16);
+    --card-bg: linear-gradient(135deg,#0F2918,rgba(15,41,24,0.55));
+    --card-orb: rgba(92,184,92,0.14);
+    --halt-note-bg: #081A0F;
+    --panel-bg: rgba(92,184,92,0.04);
+    --amenity-bg: rgba(200,150,12,0.07);
+    --amenity-border: rgba(240,192,64,0.22);
+    --twin-bg: rgba(92,184,92,0.08);
+    --badge-glow: rgba(168,224,106,0.5);
+  }
+
+  /* Theme 5: Gandharvana Gold — rich gold & amber, temple lamps */
+  [data-theme="gold"] {
+    --bg-grad: linear-gradient(180deg,#1A1000 0%,#3D2800 45%,#1A1000 100%);
+    --bg-orb1: radial-gradient(circle at 15% 0%,rgba(255,200,50,0.14),transparent 45%);
+    --bg-orb2: radial-gradient(circle at 90% 10%,rgba(255,120,0,0.10),transparent 40%);
+    --maroon-deep:#4A2E00;
+    --maroon-darker:#2A1800;
+    --maroon-panel:#3C2400;
+    --accent:#E8A800;
+    --accent-light:#FFD84D;
+    --accent2:#C06000;
+    --accent2-light:#FF9A40;
+    --ivory:#FFF5D6;
+    --ivory-dim:#D4B870;
+    --ink:#180E00;
+    --line: rgba(232,168,0,0.18);
+    --card-bg: linear-gradient(135deg,#3C2400,rgba(60,36,0,0.55));
+    --card-orb: rgba(232,168,0,0.18);
+    --halt-note-bg: #2A1800;
+    --panel-bg: rgba(232,168,0,0.04);
+    --amenity-bg: rgba(192,96,0,0.08);
+    --amenity-border: rgba(255,154,64,0.22);
+    --twin-bg: rgba(192,96,0,0.10);
+    --badge-glow: rgba(255,216,77,0.5);
+  }
+
+  /* ===== BASE STYLES (using theme vars) ===== */
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background: var(--bg-orb1), var(--bg-orb2), var(--bg-grad);
+    color:var(--ivory);
+    font-family:'Poppins', 'Noto Sans Devanagari', sans-serif;
+    min-height:100vh;
+    transition: background 0.5s ease, color 0.3s ease;
+  }
+  body.lang-hi, body.lang-mr{ font-family:'Noto Sans Devanagari', 'Poppins', sans-serif; }
+  @media (prefers-reduced-motion: reduce){ *{animation:none !important; transition:none !important;} }
+
+  .wrap{max-width:960px; margin:0 auto; padding:0 20px 80px;}
+
+  header{padding:44px 20px 26px; text-align:center; position:relative; border-bottom:1px solid var(--line); margin-bottom:18px;}
+  .flagrow{display:flex; justify-content:center; gap:6px; margin-bottom:18px; opacity:0.9;}
+  .flagrow span{width:14px; height:20px; background:var(--accent); clip-path: polygon(0 0, 100% 50%, 0 100%); animation:sway 3.2s ease-in-out infinite;}
+  .flagrow span:nth-child(odd){animation-delay:.4s;}
+  @keyframes sway{0%,100%{transform:rotate(0deg) translateY(0px);} 50%{transform:rotate(6deg) translateY(-2px);}}
+  .eyebrow-mr{font-family:'Tiro Devanagari Marathi', serif; font-size:1.35rem; color:var(--accent-light); letter-spacing:1px;}
+  h1{font-family:'Yatra One', cursive; font-weight:400; font-size:clamp(2.1rem, 6vw, 3.2rem); margin:6px 0 10px; color:var(--ivory); letter-spacing:0.5px;}
+  body.lang-hi h1, body.lang-mr h1{font-family:'Noto Sans Devanagari', sans-serif; font-weight:700;}
+  .sub{color:var(--ivory-dim); font-size:0.98rem; max-width:540px; margin:0 auto; line-height:1.7;}
+
+  /* ===== THEME PICKER ===== */
+  .theme-bar{display:flex; justify-content:center; align-items:center; gap:10px; margin:10px 0 0; flex-wrap:wrap;}
+  .theme-bar-label{font-size:0.7rem; color:var(--ivory-dim); letter-spacing:1.2px; text-transform:uppercase; font-weight:600;}
+  .theme-swatch{width:26px; height:26px; border-radius:50%; cursor:pointer; border:2px solid transparent;
+    transition:transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+    position:relative; overflow:hidden;
+  }
+  .theme-swatch:hover{transform:scale(1.2);}
+  .theme-swatch.active{border-color:var(--ivory); box-shadow:0 0 0 3px var(--accent), 0 0 12px var(--accent);}
+  .theme-swatch[data-t="saffron"]{background:linear-gradient(135deg,#5C1F2E,#E8952B);}
+  .theme-swatch[data-t="vitthal"]{background:linear-gradient(135deg,#162057,#6B9BE8);}
+  .theme-swatch[data-t="chandra"]{background:linear-gradient(135deg,#1C1C2A,#B8B8FF);}
+  .theme-swatch[data-t="tulsi"]  {background:linear-gradient(135deg,#0F2914,#5CB85C);}
+  .theme-swatch[data-t="gold"]   {background:linear-gradient(135deg,#3D2800,#FFD84D);}
+  .theme-swatch[data-t="saffron"]::after{content:'🪬'; font-size:12px; position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);}
+  .theme-swatch[data-t="vitthal"]::after{content:'🔵'; font-size:10px; position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); filter:brightness(2);}
+  .theme-swatch[data-t="chandra"]::after{content:'🌕'; font-size:12px; position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);}
+  .theme-swatch[data-t="tulsi"]::after  {content:'🌿'; font-size:11px; position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);}
+  .theme-swatch[data-t="gold"]::after   {content:'🪔'; font-size:11px; position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);}
+
+  .langbar{display:flex; justify-content:center; gap:8px; margin:20px 0 4px;}
+  .langbtn{
+    background:rgba(244,235,218,0.05); border:1px solid var(--line); color:var(--ivory-dim);
+    padding:6px 16px; border-radius:999px; font-size:0.78rem; font-weight:600; cursor:pointer; letter-spacing:0.3px;
+    transition: all 0.2s;
+  }
+  .langbtn.active{background:rgba(232,149,43,0.18); border-color:var(--accent); color:var(--accent-light);}
+
+  .toolbar{display:flex; flex-wrap:wrap; gap:10px; justify-content:center; margin:20px auto 30px; max-width:900px;}
+  .chip{display:inline-flex; align-items:center; gap:7px; background:var(--panel-bg); border:1px solid var(--line); color:var(--ivory-dim); padding:8px 15px; border-radius:999px; font-size:0.8rem; font-weight:500; cursor:pointer; transition:all .15s ease; font-family:inherit;}
+  .chip:hover{border-color:var(--accent-light); color:var(--ivory);}
+  .chip.active{background:rgba(232,149,43,0.16); border-color:var(--accent); color:var(--accent-light);}
+  .chip select{background:transparent; border:none; color:inherit; font-family:inherit; font-size:0.8rem; font-weight:500; outline:none; cursor:pointer;}
+  .chip select option{color:var(--ink);}
+
+  .status-card{background:var(--card-bg); border:1px solid var(--line); border-radius:18px; padding:28px 26px; margin-bottom:20px; position:relative; overflow:hidden; transition:background 0.5s;}
+  .status-card::before{content:""; position:absolute; top:-40%; right:-10%; width:260px; height:260px; background:radial-gradient(circle, var(--card-orb), transparent 70%);}
+  .status-top{display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:16px;}
+  .live-pill{display:inline-flex; align-items:center; gap:7px; background:rgba(90,120,80,0.25); border:1px solid var(--accent2-light); color:var(--accent2-light); padding:5px 13px 5px 10px; border-radius:999px; font-size:0.75rem; letter-spacing:1.4px; text-transform:uppercase; font-weight:600;}
+  .live-dot{width:8px; height:8px; border-radius:50%; background:var(--accent2-light); animation:pulse 1.8s ease-in-out infinite;}
+  @keyframes pulse{0%,100%{opacity:1; box-shadow:0 0 0 0 var(--badge-glow);} 50%{opacity:0.6; box-shadow:0 0 0 6px rgba(138,171,124,0);}}
+  .countdown{font-family:'Yatra One', cursive; font-size:1.05rem; color:var(--accent-light);}
+  body.lang-hi .countdown, body.lang-mr .countdown{font-family:'Noto Sans Devanagari',sans-serif; font-weight:700;}
+  .countdown small{display:block; font-family:'Poppins',sans-serif; font-size:0.65rem; color:var(--ivory-dim); text-transform:uppercase; letter-spacing:1px; font-weight:600;}
+  body.lang-hi .countdown small, body.lang-mr .countdown small{font-family:'Noto Sans Devanagari',sans-serif; text-transform:none;}
+  .status-grid{display:grid; grid-template-columns: 1fr 1fr; gap:20px; position:relative;}
+  @media(max-width:560px){.status-grid{grid-template-columns:1fr;}}
+  .status-label{font-size:0.7rem; text-transform:uppercase; letter-spacing:1.6px; color:var(--accent-light); margin-bottom:6px; font-weight:600;}
+  body.lang-hi .status-label, body.lang-mr .status-label{text-transform:none;}
+  .status-value{font-family:'Yatra One', cursive; font-weight:400; font-size:1.5rem; color:var(--ivory); line-height:1.3;}
+  body.lang-hi .status-value, body.lang-mr .status-value{font-family:'Noto Sans Devanagari',sans-serif; font-weight:700;}
+  .status-note{color:var(--ivory-dim); font-size:0.85rem; margin-top:4px;}
+  .mine-banner{margin-top:16px; padding:10px 14px; border-radius:10px; background:rgba(232,149,43,0.12); border:1px dashed var(--accent); font-size:0.82rem; color:var(--accent-light); display:none;}
+  .mine-banner.show{display:block;}
+
+  .panel-title{display:flex; align-items:baseline; justify-content:space-between; gap:12px; margin:0 0 12px; flex-wrap:wrap;}
+  .panel-title h2{font-family:'Yatra One', cursive; font-weight:400; font-size:1.4rem; margin:0; color:var(--ivory);}
+  body.lang-hi .panel-title h2, body.lang-mr .panel-title h2{font-family:'Noto Sans Devanagari',sans-serif; font-weight:700;}
+  .panel-title a{color:var(--accent-light); text-decoration:none; font-size:0.85rem; border-bottom:1px solid rgba(245,192,101,0.4); white-space:nowrap;}
+  .panel-title a:hover{color:var(--accent);}
+  .panel-note{color:var(--ivory-dim); font-size:0.78rem; margin:8px 0 0; line-height:1.7;}
+
+  section{margin-bottom:44px;}
+  body.compact .hide-in-compact{display:none !important;}
+
+  .weather-grid{display:grid; grid-template-columns:1fr 1fr; gap:14px;}
+  @media(max-width:560px){.weather-grid{grid-template-columns:1fr;}}
+  .wcard{background:var(--panel-bg); border:1px solid var(--line); border-radius:14px; padding:18px; display:flex; align-items:center; gap:14px;}
+  .wcard .icon{font-size:2rem; line-height:1;}
+  .wcard .place{font-size:0.72rem; text-transform:uppercase; letter-spacing:1.2px; color:var(--accent-light); font-weight:600;}
+  body.lang-hi .wcard .place, body.lang-mr .wcard .place{text-transform:none;}
+  .wcard .temp{font-family:'Yatra One',cursive; font-size:1.5rem; margin:3px 0;}
+  .wcard .cond{font-size:0.78rem; color:var(--ivory-dim);}
+
+  /* ===== MAP SECTION ===== */
+  .map-frame{position:relative; border-radius:16px; overflow:hidden; border:1px solid var(--line); background:var(--maroon-darker); height:480px; margin-bottom:8px;}
+  #leafletMap{width:100%; height:100%;}
+  .map-caption{color:var(--ivory-dim); font-size:0.8rem; margin:0; line-height:1.7;}
+
+  /* Pulsing current-halt marker */
+  .palkhi-pulse-wrap{position:relative; width:36px; height:36px;}
+  .palkhi-pulse-core{
+    position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
+    width:16px; height:16px; border-radius:50%;
+    background:var(--accent); border:2px solid var(--accent-light);
+    box-shadow:0 0 8px var(--accent);
+    z-index:2;
+  }
+  .palkhi-pulse-ring{
+    position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
+    width:36px; height:36px; border-radius:50%;
+    background:transparent; border:2px solid var(--accent);
+    animation:mapPulse 1.8s ease-out infinite; opacity:0.8;
+  }
+  @keyframes mapPulse{
+    0%  {transform:translate(-50%,-50%) scale(0.4); opacity:0.9;}
+    100%{transform:translate(-50%,-50%) scale(1.6); opacity:0;}
+  }
+  /* Done / upcoming halt markers */
+  .halt-marker-done{width:10px;height:10px;border-radius:50%;background:var(--accent2);border:2px solid var(--accent2-light);}
+  .halt-marker-upcoming{width:10px;height:10px;border-radius:50%;background:transparent;border:2px solid var(--ivory-dim);opacity:0.7;}
+
+  /* Leaflet popup dark theme */
+  .leaflet-popup-content-wrapper{
+    background:rgba(26,10,16,0.96); color:var(--ivory); border:1px solid var(--accent);
+    border-radius:10px; box-shadow:0 4px 20px rgba(0,0,0,0.6);
+    backdrop-filter:blur(8px); font-family:'Poppins',sans-serif;
+  }
+  .leaflet-popup-tip{background:rgba(26,10,16,0.96);}
+  .leaflet-popup-content{margin:10px 14px; font-size:0.8rem; line-height:1.6;}
+  .leaflet-popup-content b{color:var(--accent-light); display:block; margin-bottom:4px; font-size:0.85rem;}
+  .leaflet-popup-close-button{color:var(--ivory-dim) !important;}
+  /* Zoom control */
+  .leaflet-control-zoom a{
+    background:rgba(26,10,16,0.92) !important; color:var(--ivory) !important;
+    border:1px solid var(--line) !important;
+  }
+  .leaflet-control-zoom a:hover{background:rgba(232,149,43,0.2) !important; color:var(--accent-light) !important;}
+  /* Custom reset control */
+  .map-reset-ctrl{
+    background:rgba(26,10,16,0.92); border:1px solid var(--line); border-radius:6px;
+    padding:0; width:30px; height:30px; display:flex; align-items:center; justify-content:center;
+    cursor:pointer; font-size:1rem; transition:background 0.15s;
+    box-shadow:0 1px 4px rgba(0,0,0,0.4);
+  }
+  .map-reset-ctrl:hover{background:rgba(232,149,43,0.25);}
+
+  /* Official tracker CTA */
+  .map-cta{
+    display:flex; align-items:center; gap:14px; margin-top:14px;
+    background: linear-gradient(135deg, rgba(232,149,43,0.12), rgba(232,149,43,0.04));
+    border:1px solid rgba(232,149,43,0.35); border-radius:14px; padding:14px 18px;
+  }
+  .map-cta .cta-icon{font-size:2rem; line-height:1; flex-shrink:0;}
+  .map-cta .cta-body{flex:1;}
+  .map-cta .cta-title{font-size:0.88rem; font-weight:600; color:var(--accent-light); margin-bottom:3px;}
+  .map-cta .cta-sub{font-size:0.76rem; color:var(--ivory-dim); line-height:1.5;}
+  .map-cta .cta-btn{
+    display:inline-flex; align-items:center; gap:6px;
+    background:var(--accent); color:var(--ink); font-weight:700; font-size:0.8rem;
+    padding:9px 18px; border-radius:999px; text-decoration:none; flex-shrink:0;
+    transition:transform 0.15s ease, box-shadow 0.15s ease;
+    box-shadow: 0 4px 16px rgba(232,149,43,0.35);
+  }
+  .map-cta .cta-btn:hover{transform:translateY(-1px); box-shadow:0 6px 22px rgba(232,149,43,0.5);}
+
+  .way-tool{background:var(--panel-bg); border:1px solid var(--line); border-radius:14px; padding:18px; margin-bottom:16px;}
+  .way-tool label{font-size:0.78rem; color:var(--ivory-dim); display:block; margin-bottom:8px;}
+  .way-tool select{width:100%; padding:10px 12px; border-radius:9px; background:var(--maroon-darker); color:var(--ivory); border:1px solid var(--line); font-family:inherit; font-size:0.88rem;}
+  .way-result{margin-top:14px; padding:12px 14px; border-radius:10px; display:none;}
+  .way-result.show{display:block;}
+  .way-result.closed{background:rgba(92,31,46,0.35); border:1px solid var(--accent);}
+  .way-badge{font-size:0.7rem; text-transform:uppercase; font-weight:700; letter-spacing:1px; color:var(--accent-light);}
+  body.lang-hi .way-badge, body.lang-mr .way-badge{text-transform:none;}
+  .way-alt{font-size:0.85rem; color:var(--ivory); margin-top:6px; line-height:1.6;}
+
+  .closure-list{list-style:none; margin:0; padding:0;}
+  .closure-list li{padding:10px 0; border-bottom:1px solid var(--line); font-size:0.85rem; color:var(--ivory-dim); display:flex; gap:10px;}
+  .closure-list li:last-child{border-bottom:none;}
+  .closure-list .dot{color:var(--accent-light); flex-shrink:0;}
+  .checkpoint-tags{display:flex; flex-wrap:wrap; gap:6px; margin-top:10px;}
+  .checkpoint-tags span{font-size:0.72rem; background:rgba(244,235,218,0.06); border:1px solid var(--line); padding:4px 9px; border-radius:999px; color:var(--ivory-dim);}
+
+  .amenity-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:14px;}
+  @media(max-width:640px){.amenity-grid{grid-template-columns:1fr;}}
+  .amenity{background:var(--amenity-bg); border:1px solid var(--amenity-border); border-radius:14px; padding:16px;}
+  .amenity .a-title{font-size:0.9rem; font-weight:600; color:var(--accent2-light); margin-bottom:4px;}
+  .amenity .a-desc{font-size:0.8rem; color:var(--ivory-dim); line-height:1.6;}
+
+  .path-scroll{overflow-x:auto; padding:26px 4px 18px; -webkit-overflow-scrolling:touch;}
+  .path-track{display:flex; align-items:flex-start; min-width:max-content; position:relative; padding:0 10px;}
+  .path-track::before{content:""; position:absolute; top:11px; left:20px; right:20px; height:2px; background:repeating-linear-gradient(90deg, var(--ivory-dim) 0 6px, transparent 6px 12px); opacity:0.35;}
+  .halt{display:flex; flex-direction:column; align-items:center; width:132px; flex-shrink:0; position:relative; text-align:center;}
+  .halt-dot{width:22px; height:22px; border-radius:50%; background:var(--maroon-darker); border:2px solid var(--ivory-dim); z-index:2; display:flex; align-items:center; justify-content:center; font-size:11px; cursor:pointer;}
+  .halt.done .halt-dot{background:var(--accent2); border-color:var(--accent2-light); color:var(--ivory);}
+  .halt.current .halt-dot{background:var(--accent); border-color:var(--accent-light); box-shadow:0 0 0 5px rgba(232,149,43,0.22); width:26px; height:26px;}
+  .halt.mine .halt-dot{box-shadow:0 0 0 4px rgba(245,192,101,0.55);}
+  .halt-name{margin-top:10px; font-size:0.82rem; font-weight:600; color:var(--ivory); cursor:pointer;}
+  .halt.current .halt-name{color:var(--accent-light);}
+  .halt-date{font-size:0.7rem; color:var(--ivory-dim); margin-top:2px;}
+  .halt-flag{font-size:0.6rem; color:var(--accent2-light); margin-top:4px; font-weight:600; letter-spacing:0.4px;}
+  .halt-mine-tag{font-size:0.6rem; color:var(--accent-light); margin-top:3px; font-weight:600;}
+  .halt-note{display:none; position:absolute; top:56px; left:50%; transform:translateX(-50%); width:210px; background:var(--halt-note-bg); border:1px solid var(--accent); border-radius:10px; padding:10px 12px; font-size:0.74rem; color:var(--ivory-dim); line-height:1.6; z-index:5; text-align:left;}
+  .halt.open .halt-note{display:block;}
+
+  .facts{display:grid; grid-template-columns:repeat(4, 1fr); gap:14px;}
+  @media(max-width:640px){.facts{grid-template-columns:repeat(2,1fr);}}
+  .fact{background:var(--panel-bg); border:1px solid var(--line); border-radius:14px; padding:16px 14px;}
+  .fact .num{font-family:'Yatra One', cursive; font-size:1.4rem; color:var(--accent-light);}
+  body.lang-hi .fact .num, body.lang-mr .fact .num{font-family:'Noto Sans Devanagari',sans-serif; font-weight:700;}
+  .fact .lbl{font-size:0.72rem; color:var(--ivory-dim); margin-top:4px; letter-spacing:0.3px;}
+
+  .about{border-top:1px solid var(--line); padding-top:32px; display:grid; grid-template-columns: 1.1fr 0.9fr; gap:28px;}
+  @media(max-width:680px){.about{grid-template-columns:1fr;}}
+  .about h3{font-family:'Yatra One', cursive; font-weight:400; font-size:1.2rem; color:var(--ivory); margin:0 0 10px;}
+  body.lang-hi .about h3, body.lang-mr .about h3{font-family:'Noto Sans Devanagari',sans-serif; font-weight:700;}
+  .about p{color:var(--ivory-dim); font-size:0.92rem; line-height:1.8; margin:0 0 12px;}
+  .mauli{font-family:'Tiro Devanagari Marathi', serif; font-size:1.1rem; color:var(--accent-light); margin-bottom:14px;}
+  .twin{background:var(--twin-bg); border:1px solid var(--amenity-border); border-radius:14px; padding:16px 18px;}
+  .twin h4{margin:0 0 6px; font-size:0.95rem; color:var(--accent2-light);}
+  .twin p{margin:0; font-size:0.86rem; color:var(--ivory-dim); line-height:1.7;}
+
+  footer{text-align:center; color:var(--ivory-dim); font-size:0.78rem; padding-top:10px; line-height:1.9;}
+  footer a{color:var(--accent-light);}
+  .toast{position:fixed; bottom:20px; left:50%; transform:translateX(-50%) translateY(20px); background:var(--maroon-darker); border:1px solid var(--accent); color:var(--ivory); padding:10px 18px; border-radius:999px; font-size:0.82rem; opacity:0; pointer-events:none; transition:all .25s ease; z-index:50; max-width:80vw; text-align:center;}
+  .toast.show{opacity:1; transform:translateX(-50%) translateY(0);}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="flagrow"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+  <div class="eyebrow-mr">ज्ञानोबा माऊली तुकाराम</div>
+  <h1 data-i18n="title">Live Palkhi Tracker</h1>
+  <p class="sub" data-i18n="subtitle">Following Sant Dnyaneshwar Maharaj &amp; Sant Tukaram Maharaj's palkhi processions on their walking pilgrimage from Alandi &amp; Dehu to Pandharpur — live position powered by Pune Police's official feed.</p>
+  <div class="theme-bar" role="group" aria-label="Choose theme">
+    <span class="theme-bar-label">✨ Theme:</span>
+    <div class="theme-swatch active" data-t="saffron" title="Saffron Wari"></div>
+    <div class="theme-swatch" data-t="vitthal" title="Vitthal Blue"></div>
+    <div class="theme-swatch" data-t="chandra" title="Chandra Ratra"></div>
+    <div class="theme-swatch" data-t="tulsi" title="Tulsi Van"></div>
+    <div class="theme-swatch" data-t="gold" title="Gandharvana Gold"></div>
+  </div>
+</header>
+
+<div class="langbar">
+  <button class="langbtn" data-lang="en">English</button>
+  <button class="langbtn" data-lang="hi">हिंदी</button>
+  <button class="langbtn" data-lang="mr">मराठी</button>
+</div>
+
+<div class="wrap">
+
+  <div class="toolbar">
+    <div class="chip" id="processionChip">
+      <span data-i18n="tb_following">🚩 Following:</span>
+      <select id="processionSelect">
+        <option value="dnyaneshwar">Sant Dnyaneshwar Maharaj</option>
+        <option value="tukaram">Sant Tukaram Maharaj</option>
+      </select>
+    </div>
+    <div class="chip" id="villageChip">
+      <span data-i18n="tb_mystage">📍 My stage:</span>
+      <select id="villageSelect"></select>
+    </div>
+    <div class="chip" id="notifyChip" data-i18n="tb_notify">🔔 Remind me 30 min before departure</div>
+    <div class="chip" id="compactChip" data-i18n="tb_compact">🗂 Compact view</div>
+    <div class="chip" id="shareChip" data-i18n="tb_share">🖼 Share status</div>
+  </div>
+
+  <section class="status-card" id="status">
+    <div class="status-top">
+      <div class="live-pill"><span class="live-dot"></span><span data-i18n="live_badge">Live · Ashadhi Wari 2026</span></div>
+      <div class="countdown" id="countdown"><small data-i18n="countdown_label">Next departure in</small>—</div>
+    </div>
+    <div class="status-grid">
+      <div>
+        <div class="status-label" data-i18n="cur_halt_label">Current halt</div>
+        <div class="status-value" id="curHaltName">Pune</div>
+        <div class="status-note" id="curHaltNote"></div>
+      </div>
+      <div>
+        <div class="status-label" data-i18n="next_halt_label">Departs next for</div>
+        <div class="status-value" id="nextHaltName">Saswad</div>
+        <div class="status-note" id="nextHaltNote"></div>
+      </div>
+    </div>
+    <div class="mine-banner" id="mineBanner"></div>
+  </section>
+
+  <section class="hide-in-compact" id="weather">
+    <div class="panel-title"><h2 data-i18n="weather_title">Weather on the route</h2></div>
+    <div class="weather-grid" id="weatherGrid">
+      <div class="wcard"><div class="icon">⛅</div><div><div class="place" data-i18n="weather_cur">Pune · current halt</div><div class="temp">—</div><div class="cond" data-i18n="weather_loading">Loading live weather…</div></div></div>
+      <div class="wcard"><div class="icon">⛅</div><div><div class="place" data-i18n="weather_next">Saswad · next halt</div><div class="temp">—</div><div class="cond" data-i18n="weather_loading">Loading live weather…</div></div></div>
+    </div>
+    <p class="panel-note" id="weatherNote"></p>
+  </section>
+
+  <section id="map">
+    <div class="panel-title">
+      <h2 data-i18n="map_title">Where the palkhi is right now</h2>
+    </div>
+    <!-- OpenStreetMap embed — shows Pune + Palkhi route area; no X-Frame-Options restriction -->
+    <div class="map-frame">
+      <div id="leafletMap"></div>
+    </div>
+    <p class="map-caption" data-i18n="map_caption">Map shows the Pune area where the palkhi is currently halting (marker). For GPS-precise live position, use the official Pune Police tracker below.</p>
+    <!-- Official tracker CTA -->
+    <div class="map-cta">
+      <div class="cta-icon">📍</div>
+      <div class="cta-body">
+        <div class="cta-title">Live GPS tracker — Pune Police</div>
+        <div class="cta-sub">The official feed at diversion.punepolice.gov.in blocks embedding (X-Frame-Options). Open it directly for real-time GPS position.</div>
+      </div>
+      <a href="https://diversion.punepolice.gov.in/palkhi/track" target="_blank" rel="noopener" class="cta-btn">Open live tracker ↗</a>
+    </div>
+  </section>
+
+  <section class="hide-in-compact" id="traffic">
+    <div class="panel-title"><h2 data-i18n="traffic_title">Traffic &amp; road closures</h2></div>
+    <div class="way-tool">
+      <label for="waySelect" data-i18n="way_label">Am I in the way? Check a road corridor near the route:</label>
+      <select id="waySelect"></select>
+      <div class="way-result" id="wayResult"></div>
+    </div>
+    <p class="panel-note" style="margin-bottom:10px;" data-i18n="closures_intro">Closures below are in force midnight Jul 8 to midnight Jul 11, with road-specific segments shutting daily 3 AM–8 PM as the processions move through:</p>
+    <ul class="closure-list" id="closureList"></ul>
+    <p class="panel-note" data-i18n="checkpoints_intro">A round-the-clock ban on heavy vehicles, dumpers and concrete mixers is also in force at these entry points:</p>
+    <div class="checkpoint-tags" id="checkpointTags"></div>
+  </section>
+
+  <section class="hide-in-compact" id="amenities">
+    <div class="panel-title"><h2 data-i18n="amenities_title">Parking &amp; holding areas</h2></div>
+    <div class="amenity-grid" id="amenityGrid"></div>
+    <p class="panel-note" data-i18n="amenities_note">Parking is banned within 100 m of the palkhi route or any intersecting side lane — vehicles left there are towed.</p>
+  </section>
+
+  <section class="journey-section" id="journey">
+    <div class="panel-title"><h2 data-i18n="journey_title">The road to Pandharpur</h2></div>
+    <div class="path-scroll"><div class="path-track" id="pathTrack"></div></div>
+    <p class="panel-note" data-i18n="journey_note">Tap any stage for a short note about it. The marigold dot marks today's halt.</p>
+  </section>
+
+  <section class="facts">
+    <div class="fact"><div class="num" data-i18n="fact1_num">~260 km</div><div class="lbl" data-i18n="fact1_lbl">Alandi to Pandharpur on foot</div></div>
+    <div class="fact"><div class="num" data-i18n="fact2_num">17–21</div><div class="lbl" data-i18n="fact2_lbl">days of walking, dindi by dindi</div></div>
+    <div class="fact"><div class="num" data-i18n="fact3_num">Jul 8</div><div class="lbl" data-i18n="fact3_lbl">departed Alandi, 3 PM</div></div>
+    <div class="fact"><div class="num" data-i18n="fact4_num">Jul 25</div><div class="lbl" data-i18n="fact4_lbl">Ashadhi Ekadashi at Pandharpur</div></div>
+  </section>
+
+  <section class="about">
+    <div>
+      <h3 data-i18n="about_title">About the Wari</h3>
+      <div class="mauli">माउली</div>
+      <p data-i18n="about_p1">Each year, lakhs of Warkaris walk the palkhi of Sant Dnyaneshwar Maharaj from Alandi and Sant Tukaram Maharaj from Dehu toward the Vitthal Rukmini temple in Pandharpur, timing their arrival for Ashadhi Ekadashi.</p>
+      <p data-i18n="about_p2">Pune Police runs the official live tracker to help both devotees and daily commuters navigate the city safely while the processions pass through — this page gives that same feed a calmer home, with the traffic and schedule context around it.</p>
+    </div>
+    <div class="twin">
+      <h4 data-i18n="twin_title">Sant Tukaram Maharaj's Palkhi</h4>
+      <p data-i18n="twin_p">Departed Dehu on Jul 7, travelling Dehu → Pune → Indapur → Pandharpur, halting in Pune's Nana Peth alongside the Dnyaneshwar Maharaj palkhi. Switch the "Following" toggle above to trace its stages.</p>
+    </div>
+  </section>
+
+  <footer>
+    <span data-i18n="footer_p1">Route, dates and closures compiled from public reporting on the 2026 Sansthan schedule and Pune Police advisories.</span><br>
+    <span data-i18n="footer_p2">Live position always comes from Pune Police's own system at</span> <a href="https://diversion.punepolice.gov.in/" target="_blank" rel="noopener">diversion.punepolice.gov.in</a>.
+  </footer>
+
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ================= i18n ================= */
+const TR = {
+  en:{
+    title:"Live Palkhi Tracker",
+    subtitle:"Following Sant Dnyaneshwar Maharaj & Sant Tukaram Maharaj's palkhi processions on their walking pilgrimage from Alandi & Dehu to Pandharpur — live position powered by Pune Police's official feed.",
+    tb_following:"🚩 Following:", tb_mystage:"📍 My stage:", tb_notify:"🔔 Remind me 30 min before departure",
+    tb_notify_set:"🔔 Reminder set (keep this tab open)", tb_compact:"🗂 Compact view", tb_share:"🖼 Share status",
+    live_badge:"Live · Ashadhi Wari 2026", countdown_label:"Next departure in", countdown_window:"Departure window",
+    countdown_underway:"Underway / departed",
+    cur_halt_label:"Current halt", next_halt_label:"Departs next for",
+    weather_title:"Weather on the route", weather_cur:"Pune · current halt", weather_next:"Saswad · next halt",
+    weather_loading:"Loading live weather…",
+    weather_live:"Live from Open-Meteo, updated {t}.", weather_cached:"Offline — showing last known reading from {t}.",
+    weather_unavailable:"Live weather unavailable right now — this browser may be blocking the request.",
+    map_title:"Where the palkhi is right now", map_link:"Open official tracker ↗",
+    map_caption:"This map streams directly from diversion.punepolice.gov.in, the official Pune Police tracker fed by GPS units travelling with the palkhis. If it doesn't load here, use \"Open official tracker\" above — it's the same live source.",
+    traffic_title:"Traffic & road closures", way_label:"Am I in the way? Check a road corridor near the route:",
+    way_placeholder:"Choose a corridor…", way_badge:"⚠ Closed Jul 8–11",
+    closures_intro:"Closures below are in force midnight Jul 8 to midnight Jul 11, with road-specific segments shutting daily 3 AM–8 PM as the processions move through:",
+    checkpoints_intro:"A round-the-clock ban on heavy vehicles, dumpers and concrete mixers is also in force at these entry points:",
+    amenities_title:"Parking & holding areas",
+    amenities_note:"Parking is banned within 100 m of the palkhi route or any intersecting side lane — vehicles left there are towed.",
+    journey_title:"The road to Pandharpur", journey_note:"Tap any stage for a short note about it. The marigold dot marks today's halt.",
+    fact1_num:"~260 km", fact1_lbl:"Alandi to Pandharpur on foot",
+    fact2_num:"17–21", fact2_lbl:"days of walking, dindi by dindi",
+    fact3_num:"Jul 8", fact3_lbl:"departed Alandi, 3 PM",
+    fact4_num:"Jul 25", fact4_lbl:"Ashadhi Ekadashi at Pandharpur",
+    about_title:"About the Wari",
+    about_p1:"Each year, lakhs of Warkaris walk the palkhi of Sant Dnyaneshwar Maharaj from Alandi and Sant Tukaram Maharaj from Dehu toward the Vitthal Rukmini temple in Pandharpur, timing their arrival for Ashadhi Ekadashi. The two processions cross paths in Pune before continuing south, chanting \"Dnyanoba Mauli Tukaram\" to the beat of taal and mridang for the whole journey.",
+    about_p2:"Pune Police runs the official live tracker to help both devotees and daily commuters navigate the city safely while the processions pass through — this page gives that same feed a calmer home, with the traffic and schedule context around it.",
+    twin_title:"Sant Tukaram Maharaj's Palkhi",
+    twin_p:"Departed Dehu on Jul 7, travelling Dehu → Pune → Indapur → Pandharpur, halting in Pune's Nana Peth alongside the Dnyaneshwar Maharaj palkhi before both continue on separate roads toward Loni Kalbhor and beyond. Switch the \"Following\" toggle above to trace its stages.",
+    footer_p1:"Route, dates and closures compiled from public reporting on the 2026 Sansthan schedule and Pune Police advisories; a few intermediate halt dates were unconfirmed at publication and are shown without a specific day.",
+    footer_p2:"Live position always comes from Pune Police's own system at",
+    village_none:"None saved",
+    toast_following:"Now following {name}", toast_saved:"Saved — following {name} for you",
+    toast_notify_unsupported:"Notifications aren't supported in this browser",
+    toast_notify_denied:"Notification permission not granted",
+    toast_notify_toolate:"Already within 30 minutes of departure — or it's passed",
+    toast_notify_ok:"You'll be notified 30 min before departure",
+    toast_share_fail:"Share tool didn't load — try again", toast_share_ok:"Status card downloaded",
+    notif_title:"Palkhi departing soon", notif_body:"The procession leaves in about 30 minutes.",
+    time_d:"d", time_h:"h", time_m:"m", time_s:"s"
+  },
+  hi:{
+    title:"लाइव पालखी ट्रैकर",
+    subtitle:"संत ज्ञानेश्वर महाराज और संत तुकाराम महाराज की पालखी की आळंदी व देहू से पंढरपुर तक की पैदल यात्रा — लाइव स्थान पुणे पुलिस के आधिकारिक फ़ीड से।",
+    tb_following:"🚩 अनुसरण:", tb_mystage:"📍 मेरा पड़ाव:", tb_notify:"🔔 प्रस्थान से 30 मिनट पहले याद दिलाएं",
+    tb_notify_set:"🔔 रिमाइंडर सेट (यह टैब खुला रखें)", tb_compact:"🗂 संक्षिप्त दृश्य", tb_share:"🖼 स्थिति साझा करें",
+    live_badge:"लाइव · आषाढ़ी वारी 2026", countdown_label:"अगला प्रस्थान", countdown_window:"प्रस्थान का समय",
+    countdown_underway:"यात्रा जारी / प्रस्थान हो चुका",
+    cur_halt_label:"वर्तमान पड़ाव", next_halt_label:"अगला प्रस्थान",
+    weather_title:"मार्ग पर मौसम", weather_cur:"पुणे · वर्तमान पड़ाव", weather_next:"सासवड · अगला पड़ाव",
+    weather_loading:"लाइव मौसम लोड हो रहा है…",
+    weather_live:"Open-Meteo से लाइव, अपडेट {t}.", weather_cached:"ऑफ़लाइन — अंतिम ज्ञात जानकारी {t} की दिखाई जा रही है।",
+    weather_unavailable:"अभी लाइव मौसम उपलब्ध नहीं है — यह ब्राउज़र अनुरोध रोक रहा हो सकता है।",
+    map_title:"पालखी अभी कहाँ है", map_link:"आधिकारिक ट्रैकर खोलें ↗",
+    map_caption:"यह नक्शा सीधे diversion.punepolice.gov.in से आता है, जो पुणे पुलिस का आधिकारिक ट्रैकर है और पालखियों के साथ चल रहे GPS उपकरणों से जुड़ा है। अगर यह यहाँ लोड न हो, तो ऊपर \"आधिकारिक ट्रैकर खोलें\" का उपयोग करें — स्रोत वही है।",
+    traffic_title:"ट्रैफ़िक और सड़क बंद", way_label:"क्या मैं रास्ते में हूँ? मार्ग के पास की किसी सड़क की जाँच करें:",
+    way_placeholder:"एक मार्ग चुनें…", way_badge:"⚠ 8–11 जुलाई तक बंद",
+    closures_intro:"नीचे दिए गए मार्ग 8 जुलाई मध्यरात्रि से 11 जुलाई मध्यरात्रि तक बंद हैं; पालखी के गुजरने के साथ रोज़ सुबह 3 बजे से रात 8 बजे तक संबंधित सड़कें बंद रहेंगी:",
+    checkpoints_intro:"इन प्रवेश बिंदुओं पर भारी वाहनों, डंपर और कंक्रीट मिक्सर पर चौबीसों घंटे प्रतिबंध भी लागू है:",
+    amenities_title:"पार्किंग व होल्डिंग क्षेत्र",
+    amenities_note:"पालखी मार्ग या किसी भी जुड़ी हुई गली के 100 मीटर के भीतर पार्किंग प्रतिबंधित है — वहाँ खड़े वाहन टो कर दिए जाएंगे।",
+    journey_title:"पंढरपुर की राह", journey_note:"किसी भी पड़ाव पर टैप करें और उसके बारे में संक्षिप्त जानकारी पाएं। भगवा बिंदु आज का पड़ाव दिखाता है।",
+    fact1_num:"~260 कि.मी.", fact1_lbl:"आळंदी से पंढरपुर तक पैदल",
+    fact2_num:"17–21", fact2_lbl:"दिन की पैदल यात्रा, दिंडी दर दिंडी",
+    fact3_num:"8 जुलाई", fact3_lbl:"आळंदी से प्रस्थान, दोपहर 3 बजे",
+    fact4_num:"25 जुलाई", fact4_lbl:"पंढरपुर में आषाढ़ी एकादशी",
+    about_title:"वारी के बारे में",
+    about_p1:"हर वर्ष लाखों वारकरी संत ज्ञानेश्वर महाराज की पालखी आळंदी से और संत तुकाराम महाराज की पालखी देहू से पंढरपुर स्थित विट्ठल रुक्मिणी मंदिर तक पैदल ले जाते हैं, ताकि आषाढ़ी एकादशी पर पहुँच सकें। दोनों पालखियाँ पुणे में मिलती हैं और फिर आगे दक्षिण की ओर बढ़ती हैं, पूरी यात्रा में ताल-मृदंग की थाप पर \"ज्ञानोबा माउली तुकाराम\" का जाप करते हुए।",
+    about_p2:"पुणे पुलिस आधिकारिक लाइव ट्रैकर चलाती है ताकि पालखी के गुजरने के दौरान भक्त और आम नागरिक दोनों सुरक्षित रूप से आ-जा सकें — यह पेज उसी फ़ीड को ट्रैफ़िक व कार्यक्रम की जानकारी के साथ एक शांत रूप में प्रस्तुत करता है।",
+    twin_title:"संत तुकाराम महाराज की पालखी",
+    twin_p:"7 जुलाई को देहू से प्रस्थान, मार्ग देहू → पुणे → इंदापुर → पंढरपुर; पुणे के नाना पेठ में संत ज्ञानेश्वर महाराज की पालखी के साथ पड़ाव। इसके पड़ाव देखने के लिए ऊपर \"अनुसरण\" बदलें।",
+    footer_p1:"मार्ग, तिथियाँ और सड़क बंद होने की जानकारी 2026 के संस्थान कार्यक्रम व पुणे पुलिस की सार्वजनिक सूचनाओं से संकलित; प्रकाशन के समय कुछ बीच के पड़ावों की तिथियाँ अपुष्ट थीं, इसलिए बिना तिथि दिखाई गई हैं।",
+    footer_p2:"लाइव स्थान हमेशा पुणे पुलिस के अपने सिस्टम से आता है:",
+    village_none:"कुछ भी सहेजा नहीं गया",
+    toast_following:"अब अनुसरण कर रहे हैं: {name}", toast_saved:"सहेजा गया — अब आपके लिए {name} पर नज़र रखी जाएगी",
+    toast_notify_unsupported:"इस ब्राउज़र में सूचनाएं समर्थित नहीं हैं",
+    toast_notify_denied:"सूचना अनुमति नहीं मिली",
+    toast_notify_toolate:"प्रस्थान में पहले से 30 मिनट से कम बचे हैं — या यह हो चुका है",
+    toast_notify_ok:"प्रस्थान से 30 मिनट पहले आपको सूचित किया जाएगा",
+    toast_share_fail:"शेयर टूल लोड नहीं हुआ — फिर कोशिश करें", toast_share_ok:"स्थिति कार्ड डाउनलोड हो गया",
+    notif_title:"पालखी जल्द प्रस्थान करेगी", notif_body:"जुलूस लगभग 30 मिनट में रवाना होगा।",
+    time_d:"दि", time_h:"घं", time_m:"मि", time_s:"से"
+  },
+  mr:{
+    title:"लाइव्ह पालखी ट्रॅकर",
+    subtitle:"संत ज्ञानेश्वर महाराज आणि संत तुकाराम महाराज यांच्या पालखीचा आळंदी व देहू ते पंढरपूर या पायी वारीचा मागोवा — लाइव्ह ठिकाण पुणे पोलिसांच्या अधिकृत फीडवरून.",
+    tb_following:"🚩 अनुसरण करत आहात:", tb_mystage:"📍 माझा मुक्काम:", tb_notify:"🔔 प्रस्थानाच्या 30 मिनिटे आधी आठवण द्या",
+    tb_notify_set:"🔔 स्मरण सेट (हे टॅब उघडे ठेवा)", tb_compact:"🗂 संक्षिप्त दृश्य", tb_share:"🖼 स्थिती शेअर करा",
+    live_badge:"लाइव्ह · आषाढी वारी 2026", countdown_label:"पुढील प्रस्थान", countdown_window:"प्रस्थानाची वेळ",
+    countdown_underway:"प्रवास सुरू / प्रस्थान झाले",
+    cur_halt_label:"सध्याचा मुक्काम", next_halt_label:"पुढील प्रस्थान",
+    weather_title:"मार्गावरील हवामान", weather_cur:"पुणे · सध्याचा मुक्काम", weather_next:"सासवड · पुढील मुक्काम",
+    weather_loading:"लाइव्ह हवामान लोड होत आहे…",
+    weather_live:"Open-Meteo वरून लाइव्ह, अद्ययावत {t}.", weather_cached:"ऑफलाइन — शेवटची माहिती {t} ची दाखवली जात आहे.",
+    weather_unavailable:"सध्या लाइव्ह हवामान उपलब्ध नाही — हा ब्राउझर विनंती अडवत असू शकतो.",
+    map_title:"पालखी सध्या कुठे आहे", map_link:"अधिकृत ट्रॅकर उघडा ↗",
+    map_caption:"हा नकाशा थेट diversion.punepolice.gov.in वरून येतो, जो पुणे पोलिसांचा अधिकृत ट्रॅकर आहे व पालख्यांसोबत फिरणाऱ्या GPS यंत्रणेशी जोडलेला आहे. इथे लोड न झाल्यास वरील \"अधिकृत ट्रॅकर उघडा\" वापरा — स्रोत तोच आहे.",
+    traffic_title:"वाहतूक व रस्ता बंद", way_label:"मी वाटेत आहे का? मार्गाजवळचा एखादा रस्ता तपासा:",
+    way_placeholder:"एक मार्ग निवडा…", way_badge:"⚠ 8–11 जुलै बंद",
+    closures_intro:"खालील रस्ते 8 जुलैच्या मध्यरात्रीपासून 11 जुलैच्या मध्यरात्रीपर्यंत बंद आहेत; पालखी मार्गस्थ होताना संबंधित रस्ते दररोज पहाटे 3 ते रात्री 8 पर्यंत बंद राहतील:",
+    checkpoints_intro:"या प्रवेश बिंदूंवर अवजड वाहने, डंपर व काँक्रीट मिक्सर यांना चोवीस तास बंदी आहे:",
+    amenities_title:"पार्किंग व होल्डिंग क्षेत्रे",
+    amenities_note:"पालखी मार्ग किंवा जोडणाऱ्या कोणत्याही गल्लीपासून 100 मीटरच्या आत पार्किंगला बंदी आहे — तिथे उभी केलेली वाहने टो केली जातील.",
+    journey_title:"पंढरपूरची वाट", journey_note:"कोणत्याही मुक्कामावर टॅप करून त्याबद्दल थोडक्यात माहिती पाहा. भगवा ठिपका आजचा मुक्काम दाखवतो.",
+    fact1_num:"~260 कि.मी.", fact1_lbl:"आळंदी ते पंढरपूर पायी अंतर",
+    fact2_num:"17–21", fact2_lbl:"दिवसांची पायी वारी, दिंडीगणिक दिंडी",
+    fact3_num:"8 जुलै", fact3_lbl:"आळंदीहून प्रस्थान, दुपारी 3 वाजता",
+    fact4_num:"25 जुलै", fact4_lbl:"पंढरपुरात आषाढी एकादशी",
+    about_title:"वारीबद्दल",
+    about_p1:"दरवर्षी लाखो वारकरी संत ज्ञानेश्वर महाराजांची पालखी आळंदीहून आणि संत तुकाराम महाराजांची पालखी देहूहून पंढरपूरच्या विठ्ठल रुक्मिणी मंदिराकडे पायी नेतात, आषाढी एकादशीला वेळेत पोहोचण्यासाठी. दोन्ही पालख्या पुण्यात एकत्र येतात आणि नंतर दक्षिणेकडे पुढे जातात, संपूर्ण प्रवासभर टाळ-मृदंगाच्या तालावर \"ज्ञानोबा माउली तुकाराम\" असा जयघोष करत.",
+    about_p2:"पालखी मार्गस्थ असताना भाविक व नागरिक दोघांनाही सुरक्षितपणे ये-जा करता यावी यासाठी पुणे पोलीस अधिकृत लाइव्ह ट्रॅकर चालवतात — हे पान त्याच फीडला वाहतूक व वेळापत्रकाच्या माहितीसह एक शांत रूप देते.",
+    twin_title:"संत तुकाराम महाराजांची पालखी",
+    twin_p:"7 जुलैला देहूहून प्रस्थान, मार्ग देहू → पुणे → इंदापूर → पंढरपूर; पुण्यातील नाना पेठेत संत ज्ञानेश्वर महाराजांच्या पालखीसोबत मुक्काम. तिचे मुक्काम पाहण्यासाठी वरील \"अनुसरण\" बदला.",
+    footer_p1:"मार्ग, तारखा व रस्ता बंद होण्याची माहिती 2026 च्या संस्थान वेळापत्रक व पुणे पोलिसांच्या सूचनांवरून संकलित; प्रकाशनवेळी काही मधल्या मुक्कामांच्या तारखा निश्चित नव्हत्या, त्यामुळे त्या तारखेशिवाय दाखवल्या आहेत.",
+    footer_p2:"लाइव्ह ठिकाण नेहमी पुणे पोलिसांच्या स्वतःच्या यंत्रणेवरून येते:",
+    village_none:"काहीही जतन केलेले नाही",
+    toast_following:"आता अनुसरण करत आहात: {name}", toast_saved:"जतन केले — आता तुमच्यासाठी {name} फॉलो केले जाईल",
+    toast_notify_unsupported:"या ब्राउझरमध्ये सूचना समर्थित नाहीत",
+    toast_notify_denied:"सूचनेसाठी परवानगी मिळाली नाही",
+    toast_notify_toolate:"प्रस्थानाला आधीच 30 मिनिटांपेक्षा कमी वेळ आहे — किंवा ते होऊन गेले आहे",
+    toast_notify_ok:"प्रस्थानाच्या 30 मिनिटे आधी तुम्हाला सूचित केले जाईल",
+    toast_share_fail:"शेअर टूल लोड झाले नाही — पुन्हा प्रयत्न करा", toast_share_ok:"स्थिती कार्ड डाउनलोड झाले",
+    notif_title:"पालखी लवकरच प्रस्थान करणार", notif_body:"मिरवणूक सुमारे 30 मिनिटांत निघेल.",
+    time_d:"दि", time_h:"ता", time_m:"मि", time_s:"से"
+  }
+};
+let lang = "en";
+
+/* ================= data ================= */
+const DATE_TR = {
+  "Jul 8":{en:"Jul 8", hi:"8 जुलाई", mr:"8 जुलै"},
+  "Jul 9–11":{en:"Jul 9–11", hi:"9–11 जुलाई", mr:"9–11 जुलै"},
+  "~Jul 11":{en:"~Jul 11", hi:"~11 जुलाई", mr:"~11 जुलै"},
+  "en route":{en:"en route", hi:"मार्ग में", mr:"मार्गात"},
+  "Nira Snan · Jul 15":{en:"Nira Snan · Jul 15", hi:"नीरा स्नान · 15 जुलाई", mr:"नीरा स्नान · 15 जुलै"},
+  "Ringan · Jul 24":{en:"Ringan · Jul 24", hi:"रिंगण · 24 जुलाई", mr:"रिंगण · 24 जुलै"},
+  "Jul 24":{en:"Jul 24", hi:"24 जुलाई", mr:"24 जुलै"},
+  "Jul 7":{en:"Jul 7", hi:"7 जुलाई", mr:"7 जुलै"}
+};
+
+const PROCESSIONS = {
+  dnyaneshwar: {
+    label:{en:"Sant Dnyaneshwar Maharaj", hi:"संत ज्ञानेश्वर महाराज", mr:"संत ज्ञानेश्वर महाराज"},
+    stages: [
+      {id:"alandi", name:{en:"Alandi",hi:"आळंदी",mr:"आळंदी"}, dateKey:"Jul 8", state:"done",
+        note:{en:"Departure point — samadhi of Sant Dnyaneshwar Maharaj on the Indrayani river. Left at 3 PM on Jul 8.",
+              hi:"प्रस्थान स्थल — इंद्रायणी नदी किनारे संत ज्ञानेश्वर महाराज की समाधि। 8 जुलाई दोपहर 3 बजे प्रस्थान।",
+              mr:"प्रस्थान स्थळ — इंद्रायणी नदीकाठी संत ज्ञानेश्वर महाराजांची समाधी. 8 जुलैला दुपारी 3 वाजता प्रस्थान."}},
+      {id:"pune", name:{en:"Pune",hi:"पुणे",mr:"पुणे"}, dateKey:"Jul 9–11", state:"current",
+        note:{en:"Two-day halt at Palkhi Vithoba Mandir, Bhavani Peth. Departs ~2 AM on Jul 11 via Dive Ghat.",
+              hi:"भवानी पेठ के पालखी विठोबा मंदिर में दो दिन का पड़ाव। 11 जुलाई तड़के लगभग 2 बजे दिवे घाट होते हुए प्रस्थान।",
+              mr:"भवानी पेठेतील पालखी विठोबा मंदिरात दोन दिवसांचा मुक्काम. 11 जुलैला पहाटे सुमारे 2 वाजता दिवे घाटमार्गे प्रस्थान."}},
+      {id:"saswad", name:{en:"Saswad",hi:"सासवड",mr:"सासवड"}, dateKey:"~Jul 11", state:"upcoming",
+        note:{en:"Home of Sant Sopandev, Dnyaneshwar Maharaj's brother — a traditional overnight halt.",
+              hi:"संत सोपानदेव, ज्ञानेश्वर महाराज के भाई, का गाँव — परंपरागत रात्रि पड़ाव।",
+              mr:"संत सोपानदेव, ज्ञानेश्वर महाराजांचे बंधू, यांचे गाव — पारंपरिक रात्री मुक्काम."}},
+      {id:"jejuri", name:{en:"Jejuri",hi:"जेजुरी",mr:"जेजुरी"}, dateKey:"en route", state:"upcoming",
+        note:{en:"Hillside halt, near the well-known Khandoba temple.",
+              hi:"पहाड़ी पड़ाव, प्रसिद्ध खंडोबा मंदिर के पास।",
+              mr:"डोंगरावरील मुक्काम, प्रसिद्ध खंडोबा मंदिराजवळ."}},
+      {id:"valhe", name:{en:"Valhe",hi:"वाल्हे",mr:"वाल्हे"}, dateKey:"en route", state:"upcoming",
+        note:{en:"A quieter rural overnight stop.", hi:"शांत ग्रामीण रात्रि पड़ाव।", mr:"शांत ग्रामीण रात्रीचा मुक्काम."}},
+      {id:"lonand", name:{en:"Lonand",hi:"लोणंद",mr:"लोणंद"}, dateKey:"Nira Snan · Jul 15", state:"upcoming",
+        note:{en:"Site of the Nira Snan — a ceremonial dip taken in the Nira river.",
+              hi:"नीरा स्नान का स्थल — नीरा नदी में धार्मिक स्नान।",
+              mr:"नीरा स्नानाचे ठिकाण — नीरा नदीत धार्मिक स्नान."}},
+      {id:"taradgaon", name:{en:"Taradgaon",hi:"तरडगाव",mr:"तरडगाव"}, dateKey:"en route", state:"upcoming",
+        note:{en:"Rural halt on the way toward Phaltan.", hi:"फलटण की ओर जाते हुए ग्रामीण पड़ाव।", mr:"फलटणकडे जाताना ग्रामीण मुक्काम."}},
+      {id:"phaltan", name:{en:"Phaltan",hi:"फलटण",mr:"फलटण"}, dateKey:"en route", state:"upcoming",
+        note:{en:"One of the larger towns on the route; sizeable crowds gather here.",
+              hi:"मार्ग का एक बड़ा शहर; यहाँ बड़ी भीड़ जुटती है।", mr:"मार्गावरील एक मोठे शहर; इथे मोठी गर्दी जमते."}},
+      {id:"barad", name:{en:"Barad",hi:"बरड",mr:"बरड"}, dateKey:"en route", state:"upcoming",
+        note:{en:"Small halt along the final stretch.", hi:"अंतिम चरण का छोटा पड़ाव।", mr:"अंतिम टप्प्यातील छोटा मुक्काम."}},
+      {id:"natepute", name:{en:"Natepute",hi:"नातेपुते",mr:"नातेपुते"}, dateKey:"en route", state:"upcoming",
+        note:{en:"Small halt along the final stretch.", hi:"अंतिम चरण का छोटा पड़ाव।", mr:"अंतिम टप्प्यातील छोटा मुक्काम."}},
+      {id:"malshiras", name:{en:"Malshiras",hi:"माळशिरस",mr:"माळशिरस"}, dateKey:"en route", state:"upcoming",
+        note:{en:"Small halt along the final stretch.", hi:"अंतिम चरण का छोटा पड़ाव।", mr:"अंतिम टप्प्यातील छोटा मुक्काम."}},
+      {id:"velapur", name:{en:"Velapur",hi:"वेळापूर",mr:"वेळापूर"}, dateKey:"en route", state:"upcoming",
+        note:{en:"Small halt along the final stretch.", hi:"अंतिम चरण का छोटा पड़ाव।", mr:"अंतिम टप्प्यातील छोटा मुक्काम."}},
+      {id:"shegaon", name:{en:"Shegaon",hi:"शेगाव",mr:"शेगाव"}, dateKey:"en route", state:"upcoming",
+        note:{en:"Also called Bhandishegaon — a halt shortly before Wakhari.",
+              hi:"इसे भंडीशेगाव भी कहते हैं — वाखरी से ठीक पहले का पड़ाव।", mr:"याला भंडीशेगाव असेही म्हणतात — वाखरीच्या अगदी आधीचा मुक्काम."}},
+      {id:"wakhari", name:{en:"Wakhari",hi:"वाखरी",mr:"वाखरी"}, dateKey:"Ringan · Jul 24", state:"upcoming",
+        note:{en:"Last halt before Pandharpur — site of the standing Ringan, where the sacred horse gallops through a circle of devotees.",
+              hi:"पंढरपुर से पहले अंतिम पड़ाव — यहाँ खड़ा रिंगण होता है, जहाँ पवित्र घोड़ा भक्तों के घेरे में दौड़ता है।",
+              mr:"पंढरपूरपूर्वीचा शेवटचा मुक्काम — इथे उभे रिंगण होते, ज्यात पवित्र अश्व भाविकांच्या वर्तुळातून धावतो."}},
+      {id:"pandharpur", name:{en:"Pandharpur",hi:"पंढरपुर",mr:"पंढरपूर"}, dateKey:"Jul 24", state:"upcoming",
+        note:{en:"Journey's end at the Vitthal Rukmini temple, a day ahead of Ashadhi Ekadashi (Jul 25).",
+              hi:"विट्ठल रुक्मिणी मंदिर में यात्रा का अंत, आषाढ़ी एकादशी (25 जुलाई) से एक दिन पहले।",
+              mr:"विठ्ठल रुक्मिणी मंदिरात प्रवासाची सांगता, आषाढी एकादशीच्या (25 जुलै) एक दिवस आधी."}}
+    ]
+  },
+  tukaram: {
+    label:{en:"Sant Tukaram Maharaj", hi:"संत तुकाराम महाराज", mr:"संत तुकाराम महाराज"},
+    stages: [
+      {id:"dehu", name:{en:"Dehu",hi:"देहू",mr:"देहू"}, dateKey:"Jul 7", state:"done",
+        note:{en:"Departure point — home of Sant Tukaram Maharaj. Left on Jul 7.",
+              hi:"प्रस्थान स्थल — संत तुकाराम महाराज का गाँव। 7 जुलाई को प्रस्थान।",
+              mr:"प्रस्थान स्थळ — संत तुकाराम महाराजांचे गाव. 7 जुलैला प्रस्थान."}},
+      {id:"pune", name:{en:"Pune",hi:"पुणे",mr:"पुणे"}, dateKey:"Jul 9–11", state:"current",
+        note:{en:"Two-day halt at Nivdungya Vithoba Mandir, Nana Peth. Departs ~2 AM on Jul 11 via Solapur Road.",
+              hi:"नाना पेठ के निवडुंग्या विठोबा मंदिर में दो दिन का पड़ाव। 11 जुलाई तड़के लगभग 2 बजे सोलापुर रोड होते हुए प्रस्थान।",
+              mr:"नाना पेठेतील निवडुंग्या विठोबा मंदिरात दोन दिवसांचा मुक्काम. 11 जुलैला पहाटे सुमारे 2 वाजता सोलापूर रस्त्याने प्रस्थान."}},
+      {id:"lonikalbhor", name:{en:"Loni Kalbhor",hi:"लोणी काळभोर",mr:"लोणी काळभोर"}, dateKey:"~Jul 11", state:"upcoming",
+        note:{en:"First halt after leaving Pune, via Hadapsar Gadital.",
+              hi:"पुणे छोड़ने के बाद पहला पड़ाव, हडपसर गडीताल होते हुए।", mr:"पुणे सोडल्यानंतरचा पहिला मुक्काम, हडपसर गडीतळमार्गे."}},
+      {id:"indapur", name:{en:"Indapur",hi:"इंदापुर",mr:"इंदापूर"}, dateKey:"en route", state:"upcoming",
+        note:{en:"A major halt on the Tukaram Maharaj route toward Pandharpur.",
+              hi:"पंढरपुर की ओर तुकाराम महाराज मार्ग का एक प्रमुख पड़ाव।", mr:"पंढरपूरकडे तुकाराम महाराज मार्गावरील एक प्रमुख मुक्काम."}},
+      {id:"akluj", name:{en:"Akluj / Malshiras belt",hi:"अकलूज / माळशिरस पट्टा",mr:"आकलूज / माळशिरस पट्टा"}, dateKey:"en route", state:"upcoming",
+        note:{en:"Route converges toward the same final stretch as the Alandi palkhi.",
+              hi:"मार्ग आळंदी पालखी के अंतिम चरण से मिल जाता है।", mr:"मार्ग आळंदी पालखीच्या अंतिम टप्प्याशी मिळतो."}},
+      {id:"pandharpur", name:{en:"Pandharpur",hi:"पंढरपुर",mr:"पंढरपूर"}, dateKey:"Jul 24", state:"upcoming",
+        note:{en:"Journey's end at the Vitthal Rukmini temple, a day ahead of Ashadhi Ekadashi (Jul 25).",
+              hi:"विट्ठल रुक्मिणी मंदिर में यात्रा का अंत, आषाढ़ी एकादशी (25 जुलाई) से एक दिन पहले।",
+              mr:"विठ्ठल रुक्मिणी मंदिरात प्रवासाची सांगता, आषाढी एकादशीच्या (25 जुलै) एक दिवस आधी."}}
+    ]
+  }
+};
+
+const CLOSURES = [
+  {seg:"Bopkhel Phata → Vishrantwadi Chowk",
+   alt:{en:"Fully closed. Use Dhanori Road and internal village roads.",
+        hi:"पूरी तरह बंद। धानोरी रोड और आंतरिक ग्रामीण सड़कों का उपयोग करें।",
+        mr:"पूर्णपणे बंद. धानोरी रोड व अंतर्गत गावरस्ते वापरा."}},
+  {seg:"Mental Hospital Corner → Alandi Road Junction",
+   alt:{en:"Closed. Route via Jail Road – Vimantal (Airport) Road.",
+        hi:"बंद। जेल रोड – विमानतल (एयरपोर्ट) रोड से जाएं।",
+        mr:"बंद. जेल रोड – विमानतळ (एअरपोर्ट) रोडमार्गे जा."}},
+  {seg:"Sadhu Vaswani Bridge / Sadalbaba Darga → Patil Estate Road",
+   alt:{en:"Closed. Use Parnakuti Chowk – Mangaldas Chowk – RTO Chowk.",
+        hi:"बंद। पर्णकुटी चौक – मंगलदास चौक – आरटीओ चौक का उपयोग करें।",
+        mr:"बंद. पर्णकुटी चौक – मंगलदास चौक – आरटीओ चौक वापरा."}},
+  {seg:"Chandrama Chowk → Alandi Road",
+   alt:{en:"Closed. Divert via Tarkeshwar Chowk.", hi:"बंद। तारकेश्वर चौक से जाएं।", mr:"बंद. तारकेश्वर चौकमार्गे जा."}},
+  {seg:"Holkar Bridge → Chandrama Chowk / Sapras Chowk",
+   alt:{en:"Closed. Use the Sangamwadi or Parnakuti Chowk corridors.",
+        hi:"बंद। संगमवाड़ी या पर्णकुटी चौक मार्ग का उपयोग करें।", mr:"बंद. संगमवाडी किंवा पर्णकुटी चौक मार्ग वापरा."}},
+  {seg:"Bopodi Chowk → Church Chowk (Pimpri-Chinchwad side)",
+   alt:{en:"Closed — this is the Tukaram Maharaj path. Plan around Aundh/Bopodi entirely.",
+        hi:"बंद — यह तुकाराम महाराज मार्ग है। औंध/बोपोडी को पूरी तरह टालें।",
+        mr:"बंद — हा तुकाराम महाराज मार्ग आहे. औंध/बोपोडी पूर्णपणे टाळा."}}
+];
+const CHECKPOINTS = ["Bopodi Chowk (Harris Bridge)","Rajiv Gandhi Bridge (Aundh)","Bremen Chowk","Bopkhel Fata","Kharadi Bypass","Kalas Jakat Naka","Kesnand Phata (Wagholi)","Loni Kalbhor (Theur Phata)","Radha Chowk (Baner)","Sutarwadi (Pashan)","Chandani Chowk","Vadgaon Bridge","Navale Bridge","Katraj Chowk","+"];
+
+const AMENITIES = [
+  {title:{en:"Katraj periphery",hi:"कात्रज परिसर",mr:"कात्रज परिसर"},
+   desc:{en:"Designated holding area for outstation vehicles arriving from the south.",
+         hi:"दक्षिण से आने वाले बाहरी वाहनों के लिए निर्धारित होल्डिंग क्षेत्र।",
+         mr:"दक्षिणेकडून येणाऱ्या बाहेरगावच्या वाहनांसाठी नियोजित होल्डिंग क्षेत्र."}},
+  {title:{en:"Alandi Road periphery",hi:"आळंदी रोड परिसर",mr:"आळंदी रोड परिसर"},
+   desc:{en:"Holding area for vehicles coming from the north / Alandi side.",
+         hi:"उत्तर / आळंदी की ओर से आने वाले वाहनों के लिए होल्डिंग क्षेत्र।",
+         mr:"उत्तरेकडून / आळंदीकडून येणाऱ्या वाहनांसाठी होल्डिंग क्षेत्र."}},
+  {title:{en:"Hadapsar periphery",hi:"हडपसर परिसर",mr:"हडपसर परिसर"},
+   desc:{en:"Holding area for vehicles from the east, near the Solapur Road exit.",
+         hi:"पूर्व से आने वाले वाहनों के लिए होल्डिंग क्षेत्र, सोलापुर रोड निकास के पास।",
+         mr:"पूर्वेकडून येणाऱ्या वाहनांसाठी होल्डिंग क्षेत्र, सोलापूर रोड निर्गमनाजवळ."}}
+];
+
+const DEPARTURE_TARGET = new Date("2026-07-11T02:00:00+05:30");
+let currentProcession = "dnyaneshwar";
+
+/* ================= map coordinates ================= */
+const HALT_COORDS = {
+  // Dnyaneshwar route
+  alandi:     [18.6826, 73.8963],
+  pune:       [18.5190, 73.8553],
+  saswad:     [18.3406, 74.0355],
+  jejuri:     [18.2724, 74.1651],
+  valhe:      [18.1350, 74.2850],
+  lonand:     [17.9780, 74.4510],
+  taradgaon:  [17.9100, 74.5200],
+  phaltan:    [17.9878, 74.4351],
+  barad:      [17.8700, 74.6300],
+  natepute:   [17.7850, 74.7900],
+  malshiras:  [17.8615, 74.9207],
+  velapur:    [17.7580, 75.0450],
+  shegaon:    [17.6980, 75.1050],
+  wakhari:    [17.6840, 75.2050],
+  pandharpur: [17.6779, 75.3219],
+  // Tukaram route extra
+  dehu:       [18.7186, 73.7627],
+  lonikalbhor:[18.4380, 74.0150],
+  indapur:    [18.1144, 74.9788],
+  akluj:      [17.8720, 74.9730],
+};
+
+// Route polylines [lat,lon] in order
+const ROUTES = {
+  dnyaneshwar: [
+    [18.6826,73.8963],[18.5190,73.8553],[18.3406,74.0355],
+    [18.2724,74.1651],[18.1350,74.2850],[17.9780,74.4510],
+    [17.9100,74.5200],[17.9878,74.4351],[17.8700,74.6300],
+    [17.7850,74.7900],[17.8615,74.9207],[17.7580,75.0450],
+    [17.6980,75.1050],[17.6840,75.2050],[17.6779,75.3219]
+  ],
+  tukaram: [
+    [18.7186,73.7627],[18.5190,73.8553],[18.4380,74.0150],
+    [18.1144,74.9788],[17.8720,74.9730],[17.6779,75.3219]
+  ]
+};
+
+/* ================= leaflet map ================= */
+let leafletMap = null;
+let currentHaltMarker = null;
+let routeLayer = null;
+let haltMarkersLayer = null;
+let homeLatlng = [18.5190, 73.8553];
+let homeZoom = 11;
+
+function initMap(){
+  if(leafletMap) return; // already inited
+  leafletMap = L.map('leafletMap', {
+    center: homeLatlng,
+    zoom: homeZoom,
+    zoomControl: false,
+    attributionControl: true
+  });
+
+  // Dark CartoDB tiles (free, no API key)
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" style="color:#aaa">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions" style="color:#aaa">CARTO</a>',
+    subdomains: 'abcd',
+    maxZoom: 18
+  }).addTo(leafletMap);
+
+  // Zoom control bottom-right
+  L.control.zoom({ position: 'bottomright' }).addTo(leafletMap);
+
+  // Custom "Return to palkhi" control
+  const ResetControl = L.Control.extend({
+    options: { position: 'bottomright' },
+    onAdd: function(){
+      const div = L.DomUtil.create('div', 'map-reset-ctrl leaflet-bar');
+      div.title = 'Return to current palkhi location';
+      div.innerHTML = '📍';
+      div.setAttribute('role','button');
+      div.setAttribute('aria-label','Return to palkhi');
+      L.DomEvent.on(div, 'click', L.DomEvent.stopPropagation);
+      L.DomEvent.on(div, 'click', L.DomEvent.preventDefault);
+      L.DomEvent.on(div, 'click', () => {
+        leafletMap.flyTo(homeLatlng, homeZoom, {duration:1.2});
+        if(currentHaltMarker) currentHaltMarker.openPopup();
+      });
+      return div;
+    }
+  });
+  new ResetControl().addTo(leafletMap);
+
+  updateMapProcession(currentProcession);
+}
+
+function updateMapProcession(proc){
+  if(!leafletMap) return;
+  const data = PROCESSIONS[proc];
+  const curStage = data.stages.find(s => s.state === 'current') || data.stages[0];
+  const curCoords = HALT_COORDS[curStage.id] || [18.5190, 73.8553];
+  homeLatlng = curCoords;
+  homeZoom = 11;
+
+  // Clear old layers
+  if(routeLayer)    { leafletMap.removeLayer(routeLayer);    routeLayer = null; }
+  if(haltMarkersLayer){ haltMarkersLayer.clearLayers(); }
+  else { haltMarkersLayer = L.layerGroup().addTo(leafletMap); }
+  if(currentHaltMarker){ leafletMap.removeLayer(currentHaltMarker); currentHaltMarker = null; }
+
+  // Draw route polyline
+  const routeCoords = ROUTES[proc];
+  if(routeCoords){
+    // Completed (done) segment in green
+    const doneIds = data.stages.filter(s => s.state==='done').map(s=>s.id);
+    const doneCoords = doneIds.map(id => HALT_COORDS[id]).filter(Boolean);
+    const curIdx = data.stages.findIndex(s => s.state==='current');
+    if(curIdx > -1 && HALT_COORDS[data.stages[curIdx].id]){
+      doneCoords.push(HALT_COORDS[data.stages[curIdx].id]);
+    }
+    if(doneCoords.length > 1){
+      L.polyline(doneCoords, {
+        color:'#8AAB7C', weight:3.5, opacity:0.9, dashArray:null
+      }).addTo(leafletMap);
+    }
+    // Upcoming segment dashed
+    L.polyline(routeCoords, {
+      color:'#E8952B', weight:2.5, opacity:0.45, dashArray:'6 8'
+    }).addTo(leafletMap);
+  }
+
+  // Add halt markers
+  data.stages.forEach(s => {
+    const coords = HALT_COORDS[s.id];
+    if(!coords) return;
+    if(s.state === 'current') return; // handled separately as pulsing
+
+    const iconClass = s.state === 'done' ? 'halt-marker-done' : 'halt-marker-upcoming';
+    const icon = L.divIcon({
+      className:'',
+      html:`<div class="${iconClass}"></div>`,
+      iconSize:[10,10], iconAnchor:[5,5]
+    });
+    const marker = L.marker(coords, {icon});
+    const dateStr = s.dateKey ? ` <span style="color:var(--ivory-dim);font-size:0.72rem">${s.dateKey}</span>` : '';
+    marker.bindPopup(`<b>${s.name[lang]}${dateStr}</b>${s.note[lang]}`);
+    haltMarkersLayer.addLayer(marker);
+  });
+
+  // Pulsing marker for current halt
+  const pulseIcon = L.divIcon({
+    className:'',
+    html:`<div class="palkhi-pulse-wrap"><div class="palkhi-pulse-ring"></div><div class="palkhi-pulse-core"></div></div>`,
+    iconSize:[36,36], iconAnchor:[18,18]
+  });
+  currentHaltMarker = L.marker(curCoords, {icon: pulseIcon, zIndexOffset:1000});
+  const curNote = curStage.note[lang];
+  currentHaltMarker.bindPopup(
+    `<b>📍 ${curStage.name[lang]} — Current halt</b>${curNote}`,
+    {maxWidth:240}
+  );
+  currentHaltMarker.addTo(leafletMap);
+
+  // Fly to current halt
+  leafletMap.flyTo(curCoords, homeZoom, {duration:1.0});
+  setTimeout(() => currentHaltMarker.openPopup(), 1100);
+}
+
+/* ================= i18n apply ================= */
+function applyLanguage(){
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.getAttribute('data-i18n');
+    if(TR[lang][key] !== undefined) el.textContent = TR[lang][key];
+  });
+  document.getElementById('waySelect').querySelector('option')?.remove();
+  const waySelect = document.getElementById('waySelect');
+  waySelect.innerHTML = `<option value="">${TR[lang].way_placeholder}</option>`;
+  CLOSURES.forEach((c,i) => {
+    const opt = document.createElement('option');
+    opt.value = i; opt.textContent = c.seg;
+    waySelect.appendChild(opt);
+  });
+  document.getElementById('notifyChip').textContent =
+    document.getElementById('notifyChip').classList.contains('active') ? TR[lang].tb_notify_set : TR[lang].tb_notify;
+  document.body.className = document.body.className.replace(/lang-\w+/g,'').trim();
+  document.body.classList.add('lang-'+lang);
+  document.querySelectorAll('.langbtn').forEach(b => b.classList.toggle('active', b.dataset.lang === lang));
+  renderClosureList();
+  renderCheckpoints();
+  renderAmenities();
+  renderProcessionOptions();
+  renderPath();
+  populateVillageSelect();
+  document.getElementById('wayResult').classList.remove('show');
+  waySelect.value = "";
+  applyMine();
+}
+
+function renderProcessionOptions(){
+  const sel = document.getElementById('processionSelect');
+  const cur = sel.value || currentProcession;
+  sel.innerHTML = "";
+  Object.keys(PROCESSIONS).forEach(key => {
+    const opt = document.createElement('option');
+    opt.value = key; opt.textContent = PROCESSIONS[key].label[lang];
+    sel.appendChild(opt);
+  });
+  sel.value = cur;
+}
+
+function renderClosureList(){
+  const list = document.getElementById('closureList');
+  list.innerHTML = "";
+  CLOSURES.forEach(c => {
+    const li = document.createElement('li');
+    li.innerHTML = `<span class="dot">●</span><span><strong>${c.seg}</strong><br>${c.alt[lang]}</span>`;
+    list.appendChild(li);
+  });
+}
+function renderCheckpoints(){
+  const tagBox = document.getElementById('checkpointTags');
+  tagBox.innerHTML = "";
+  CHECKPOINTS.forEach(cp => {
+    const span = document.createElement('span');
+    span.textContent = cp;
+    tagBox.appendChild(span);
+  });
+}
+function renderAmenities(){
+  const grid = document.getElementById('amenityGrid');
+  grid.innerHTML = "";
+  AMENITIES.forEach(a => {
+    const div = document.createElement('div');
+    div.className = 'amenity';
+    div.innerHTML = `<div class="a-title">${a.title[lang]}</div><div class="a-desc">${a.desc[lang]}</div>`;
+    grid.appendChild(div);
+  });
+}
+
+/* ================= path / status ================= */
+function renderPath(){
+  const data = PROCESSIONS[currentProcession];
+  const track = document.getElementById('pathTrack');
+  track.innerHTML = "";
+  data.stages.forEach(s => {
+    const el = document.createElement('div');
+    el.className = 'halt ' + s.state;
+    el.dataset.id = s.id;
+    const mark = s.state === 'done' ? '✓' : '';
+    el.innerHTML = `      <div class="halt-dot">${mark}</div>
+      <div class="halt-name">${s.name[lang]}</div>
+      <div class="halt-date">${s.dateKey ? (DATE_TR[s.dateKey]?.[lang] || s.dateKey) : ''}</div>
+      ${s.state === 'done' ? '<div class="halt-flag">✓ done</div>' : ''}
+      ${s.state === 'current' ? '<div class="halt-flag">📍 here now</div>' : ''}
+      <div class="halt-note">${s.note[lang]}</div>
+    `;
+    el.addEventListener('click', () => {
+      document.querySelectorAll('.halt').forEach(h => { if(h !== el) h.classList.remove('open'); });
+      el.classList.toggle('open');
+    });
+    track.appendChild(el);
+  });
+  applyMine();
+}
+
+function updateStatus(){
+  const data = PROCESSIONS[currentProcession];
+  const cur  = data.stages.find(s => s.state === 'current') || data.stages[0];
+  const upcoming = data.stages.filter(s => s.state === 'upcoming');
+  const next = upcoming[0];
+  document.getElementById('curHaltName').textContent = cur.name[lang];
+  document.getElementById('curHaltNote').textContent = cur.note[lang];
+  document.getElementById('nextHaltName').textContent = next ? next.name[lang] : '—';
+  document.getElementById('nextHaltNote').textContent = next ? next.note[lang] : '';
+  // update weather labels
+  const wc = document.querySelectorAll('.wcard .place');
+  if(wc[0]) wc[0].textContent = cur.name[lang] + ' · ' + (TR[lang].weather_cur.split('·')[1]?.trim() || 'current halt');
+  if(wc[1]) wc[1].textContent = (next ? next.name[lang] : '—') + ' · ' + (TR[lang].weather_next.split('·')[1]?.trim() || 'next halt');
+}
+
+/* ================= village select ================= */
+function populateVillageSelect(){
+  const sel = document.getElementById('villageSelect');
+  const saved = localStorage.getItem('palkhi_village_'+currentProcession) || '';
+  const data = PROCESSIONS[currentProcession];
+  sel.innerHTML = `<option value="">${TR[lang].village_none}</option>`;
+  data.stages.forEach(s => {
+    const opt = document.createElement('option');
+    opt.value = s.id; opt.textContent = s.name[lang];
+    sel.appendChild(opt);
+  });
+  sel.value = saved;
+}
+
+function applyMine(){
+  const saved = localStorage.getItem('palkhi_village_'+currentProcession) || '';
+  document.querySelectorAll('.halt').forEach(el => el.classList.remove('mine'));
+  document.querySelector('.mine-banner')?.classList.remove('show');
+  if(!saved) return;
+  const mineEl = document.querySelector(`.halt[data-id="${saved}"]`);
+  if(mineEl){
+    mineEl.classList.add('mine');
+    const data = PROCESSIONS[currentProcession];
+    const stage = data.stages.find(s => s.id === saved);
+    if(stage){
+      const banner = document.getElementById('mineBanner');
+      const cur = data.stages.find(s => s.state === 'current');
+      const curIdx = data.stages.indexOf(cur);
+      const mineIdx = data.stages.indexOf(stage);
+      const stagesAway = mineIdx - curIdx;
+      let msg = '';
+      if(stagesAway < 0) msg = `📍 ${stage.name[lang]} — the palkhi has already passed this stage.`;
+      else if(stagesAway === 0) msg = `📍 ${stage.name[lang]} — the palkhi is at your stage right now!`;
+      else msg = `📍 ${stage.name[lang]} is ${stagesAway} stage${stagesAway>1?'s':''} ahead. Keep watching!`;
+      banner.textContent = msg;
+      banner.classList.add('show');
+    }
+  }
+}
+
+/* ================= countdown ================= */
+function tick(){
+  const now  = new Date();
+  const diff = DEPARTURE_TARGET - now;
+  const cd   = document.getElementById('countdown');
+  const t    = TR[lang];
+  if(diff <= 0){
+    cd.innerHTML = `<small>${t.countdown_label}</small>${t.countdown_underway}`;
+    return;
+  }
+  if(diff < 30*60*1000){
+    cd.innerHTML = `<small>${t.countdown_window}</small>${t.countdown_underway}`;
+    return;
+  }
+  const d = Math.floor(diff/86400000);
+  const h = Math.floor((diff%86400000)/3600000);
+  const m = Math.floor((diff%3600000)/60000);
+  const s = Math.floor((diff%60000)/1000);
+  let str = '';
+  if(d) str += `${d}${t.time_d} `;
+  str += `${h}${t.time_h} ${m}${t.time_m} ${s}${t.time_s}`;
+  cd.innerHTML = `<small>${t.countdown_label}</small>${str}`;
+}
+
+/* ================= weather ================= */
+const WX_CACHE_KEY = 'palkhi_wx_cache';
+const WX_COORDS = [
+  {lat:18.5204, lon:73.8567},  // Pune
+  {lat:18.3406, lon:74.0355}   // Saswad
+];
+async function fetchWeather(){
+  const cards = document.querySelectorAll('#weatherGrid .wcard');
+  try {
+    const cached = JSON.parse(localStorage.getItem(WX_CACHE_KEY)||'null');
+    if(cached && (Date.now() - cached.ts < 30*60*1000)){
+      renderWeather(cached.data, true, new Date(cached.ts));
+      return;
+    }
+    const results = await Promise.all(WX_COORDS.map(c =>
+      fetch(`https://api.open-meteo.com/v1/forecast?latitude=${c.lat}&longitude=${c.lon}&current_weather=true`)
+        .then(r => r.json())
+    ));
+    localStorage.setItem(WX_CACHE_KEY, JSON.stringify({ts: Date.now(), data: results}));
+    renderWeather(results, false, new Date());
+  } catch(e){
+    const cached = JSON.parse(localStorage.getItem(WX_CACHE_KEY)||'null');
+    if(cached) renderWeather(cached.data, true, new Date(cached.ts));
+    else {
+      cards.forEach(c => { c.querySelector('.temp').textContent='—'; c.querySelector('.cond').textContent = TR[lang].weather_unavailable; });
+    }
+    document.getElementById('weatherNote').textContent = TR[lang].weather_unavailable;
+  }
+}
+const WX_ICONS = {0:'☀️',1:'🌤️',2:'⛅',3:'☁️',45:'🌫️',48:'🌫️',51:'🌦️',53:'🌦️',55:'🌧️',61:'🌧️',63:'🌧️',65:'🌧️',71:'❄️',73:'❄️',75:'❄️',80:'🌦️',81:'🌧️',82:'⛈️',95:'⛈️',96:'⛈️',99:'⛈️'};
+function renderWeather(results, fromCache, t){
+  const cards = document.querySelectorAll('#weatherGrid .wcard');
+  results.forEach((r, i) => {
+    if(!cards[i]) return;
+    const cw = r.current_weather;
+    if(!cw) return;
+    const icon = WX_ICONS[cw.weathercode] || '🌡️';
+    cards[i].querySelector('.icon').textContent = icon;
+    cards[i].querySelector('.temp').textContent = `${Math.round(cw.temperature)}°C`;
+    cards[i].querySelector('.cond').textContent = cw.windspeed + ' km/h wind';
+  });
+  const timeStr = t.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
+  const noteEl = document.getElementById('weatherNote');
+  const tpl = fromCache ? TR[lang].weather_cached : TR[lang].weather_live;
+  noteEl.textContent = tpl.replace('{t}', timeStr);
+}
+
+/* ================= toast ================= */
+function showToast(msg, ms=3000){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), ms);
+}
+
+/* ================= share (html2canvas) ================= */
+document.getElementById('shareChip').addEventListener('click', async () => {
+  if(typeof html2canvas === 'undefined'){
+    showToast(TR[lang].toast_share_fail);
+    return;
+  }
+  try {
+    const card = document.getElementById('status');
+    const canvas = await html2canvas(card, {scale:2, backgroundColor:null, useCORS:true});
+    const link = document.createElement('a');
+    link.download = 'palkhi-status.png';
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+    showToast(TR[lang].toast_share_ok);
+  } catch(e){
+    showToast(TR[lang].toast_share_fail);
+  }
+});
+
+/* ================= notify chip ================= */
+let notifyTimer = null;
+document.getElementById('notifyChip').addEventListener('click', async () => {
+  const chip = document.getElementById('notifyChip');
+  if(!('Notification' in window)){ showToast(TR[lang].toast_notify_unsupported); return; }
+  const perm = await Notification.requestPermission();
+  if(perm !== 'granted'){ showToast(TR[lang].toast_notify_denied); return; }
+  const msLeft = DEPARTURE_TARGET - Date.now();
+  const fireAt  = msLeft - 30*60*1000;
+  if(fireAt <= 0){ showToast(TR[lang].toast_notify_toolate); return; }
+  if(notifyTimer) clearTimeout(notifyTimer);
+  notifyTimer = setTimeout(() => {
+    new Notification(TR[lang].notif_title, {body: TR[lang].notif_body, icon:'https://diversion.punepolice.gov.in/favicon.ico'});
+  }, fireAt);
+  chip.classList.add('active');
+  chip.textContent = TR[lang].tb_notify_set;
+  showToast(TR[lang].toast_notify_ok);
+});
+
+/* ================= compact chip ================= */
+document.getElementById('compactChip').addEventListener('click', () => {
+  document.body.classList.toggle('compact');
+  document.getElementById('compactChip').classList.toggle('active');
+});
+
+/* ================= procession select ================= */
+document.getElementById('processionSelect').addEventListener('change', e => {
+  currentProcession = e.target.value;
+  localStorage.setItem('palkhi_procession', currentProcession);
+  const name = PROCESSIONS[currentProcession].label[lang];
+  renderPath();
+  updateStatus();
+  populateVillageSelect();
+  applyMine();
+  updateMapProcession(currentProcession);
+  showToast(TR[lang].toast_following.replace('{name}', name));
+});
+
+/* ================= village select ================= */
+document.getElementById('villageSelect').addEventListener('change', e => {
+  const val = e.target.value;
+  localStorage.setItem('palkhi_village_'+currentProcession, val);
+  if(val){
+    const data = PROCESSIONS[currentProcession];
+    const stage = data.stages.find(s => s.id === val);
+    const name  = stage ? stage.name[lang] : val;
+    showToast(TR[lang].toast_saved.replace('{name}', name));
+  }
+  applyMine();
+});
+
+/* ================= way-check ================= */
+document.getElementById('waySelect').addEventListener('change', e => {
+  const idx = e.target.value;
+  const res = document.getElementById('wayResult');
+  if(idx === ''){ res.classList.remove('show'); return; }
+  const c = CLOSURES[idx];
+  res.className = 'way-result show closed';
+  res.innerHTML = `<div class="way-badge">${TR[lang].way_badge}</div><div class="way-alt">${c.alt[lang]}</div>`;
+});
+
+/* ================= theme switcher ================= */
+const THEME_NAMES = {
+  saffron: '🪬 Saffron Wari',
+  vitthal: '🔵 Vitthal Blue',
+  chandra: '🌕 Chandra Ratra',
+  tulsi:   '🌿 Tulsi Van',
+  gold:    '🪔 Gandharvana Gold'
+};
+function applyTheme(t){
+  document.documentElement.setAttribute('data-theme', t);
+  document.querySelectorAll('.theme-swatch').forEach(s =>
+    s.classList.toggle('active', s.dataset.t === t)
+  );
+  localStorage.setItem('palkhi_theme', t);
+}
+document.querySelectorAll('.theme-swatch').forEach(sw => {
+  sw.addEventListener('click', () => {
+    applyTheme(sw.dataset.t);
+    showToast(THEME_NAMES[sw.dataset.t] + ' theme applied');
+  });
+});
+
+/* ================= lang buttons ================= */
+document.querySelectorAll('.langbtn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    lang = btn.dataset.lang;
+    localStorage.setItem('palkhi_lang', lang);
+    applyLanguage();
+    updateStatus();
+  });
+});
+
+/* ================= init ================= */
+(function init(){
+  lang = localStorage.getItem('palkhi_lang') || 'en';
+  currentProcession = localStorage.getItem('palkhi_procession') || 'dnyaneshwar';
+  const savedTheme = localStorage.getItem('palkhi_theme') || 'saffron';
+  applyTheme(savedTheme);
+  document.getElementById('processionSelect').value = currentProcession;
+  applyLanguage();
+  updateStatus();
+  tick();
+  setInterval(tick, 1000);
+  fetchWeather();
+  // Init map after a short delay so DOM is ready
+  setTimeout(initMap, 300);
+})();
+</script>
+</body>
+</html>
