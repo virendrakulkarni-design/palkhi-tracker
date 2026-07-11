@@ -426,7 +426,7 @@
     </div>
     <div class="status-grid">
       <div>
-        <div class="status-label" data-i18n="cur_halt_label">Current halt</div>
+        <div class="status-label" id="curHaltLabel" data-i18n="cur_halt_label">Current halt</div>
         <div class="status-value" id="curHaltName">Pune</div>
         <div class="status-note" id="curHaltNote"></div>
       </div>
@@ -531,8 +531,8 @@ const TR = {
     tb_following:"🚩 Following:", tb_mystage:"📍 My stage:", tb_notify:"🔔 Remind me 30 min before departure",
     tb_notify_set:"🔔 Reminder set (keep this tab open)", tb_compact:"🗂 Compact view", tb_share:"🖼 Share status",
     live_badge:"Live · Ashadhi Wari 2026", countdown_label:"Next departure in", countdown_window:"Departure window",
-    countdown_underway:"Underway / departed",
-    cur_halt_label:"Current halt", next_halt_label:"Departs next for",
+    countdown_underway:"En route",
+    cur_halt_label:"Current halt", cur_halt_enroute:"En route to", next_halt_label:"Departs next for",
     weather_title:"Weather on the route", weather_cur:"Pune · current halt", weather_next:"Saswad · next halt",
     weather_loading:"Loading live weather…",
     weather_live:"Live from Open-Meteo, updated {t}.", weather_cached:"Offline — showing last known reading from {t}.",
@@ -573,8 +573,8 @@ const TR = {
     tb_following:"🚩 अनुसरण:", tb_mystage:"📍 मेरा पड़ाव:", tb_notify:"🔔 प्रस्थान से 30 मिनट पहले याद दिलाएं",
     tb_notify_set:"🔔 रिमाइंडर सेट (यह टैब खुला रखें)", tb_compact:"🗂 संक्षिप्त दृश्य", tb_share:"🖼 स्थिति साझा करें",
     live_badge:"लाइव · आषाढ़ी वारी 2026", countdown_label:"अगला प्रस्थान", countdown_window:"प्रस्थान का समय",
-    countdown_underway:"यात्रा जारी / प्रस्थान हो चुका",
-    cur_halt_label:"वर्तमान पड़ाव", next_halt_label:"अगला प्रस्थान",
+    countdown_underway:"मार्ग में (En route)",
+    cur_halt_label:"वर्तमान पड़ाव", cur_halt_enroute:"की ओर प्रस्थान", next_halt_label:"अगला प्रस्थान",
     weather_title:"मार्ग पर मौसम", weather_cur:"पुणे · वर्तमान पड़ाव", weather_next:"सासवड · अगला पड़ाव",
     weather_loading:"लाइव मौसम लोड हो रहा है…",
     weather_live:"Open-Meteo से लाइव, अपडेट {t}.", weather_cached:"ऑफ़लाइन — अंतिम ज्ञात जानकारी {t} की दिखाई जा रही है।",
