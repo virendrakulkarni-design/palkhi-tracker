@@ -882,7 +882,7 @@ function initMap(){
 function updateMapProcession(proc){
   if(!leafletMap) return;
   const data = PROCESSIONS[proc];
-  const curStage = data.stages.find(s => s.state === 'current') || data.stages[0];
+  const curStage = data.stages.find(s => s.state === 'current' || s.state === 'enroute') || data.stages[0];
   const curCoords = HALT_COORDS[curStage.id] || [18.5190, 73.8553];
   homeLatlng = curCoords;
   homeZoom = 11;
@@ -899,7 +899,7 @@ function updateMapProcession(proc){
     // Completed (done) segment in green
     const doneIds = data.stages.filter(s => s.state==='done').map(s=>s.id);
     const doneCoords = doneIds.map(id => HALT_COORDS[id]).filter(Boolean);
-    const curIdx = data.stages.findIndex(s => s.state==='current');
+    const curIdx = data.stages.findIndex(s => s.state==='current' || s.state==='enroute');
     if(curIdx > -1 && HALT_COORDS[data.stages[curIdx].id]){
       doneCoords.push(HALT_COORDS[data.stages[curIdx].id]);
     }
@@ -918,7 +918,7 @@ function updateMapProcession(proc){
   data.stages.forEach(s => {
     const coords = HALT_COORDS[s.id];
     if(!coords) return;
-    if(s.state === 'current') return; // handled separately as pulsing
+    if(s.state === 'current' || s.state === 'enroute') return; // handled separately as pulsing
 
     const iconClass = s.state === 'done' ? 'halt-marker-done' : 'halt-marker-upcoming';
     const icon = L.divIcon({
@@ -1098,7 +1098,7 @@ function applyMine(){
     const stage = data.stages.find(s => s.id === saved);
     if(stage){
       const banner = document.getElementById('mineBanner');
-      const cur = data.stages.find(s => s.state === 'current');
+      const cur = data.stages.find(s => s.state === 'current' || s.state === 'enroute');
       const curIdx = data.stages.indexOf(cur);
       const mineIdx = data.stages.indexOf(stage);
       const stagesAway = mineIdx - curIdx;
@@ -1119,11 +1119,11 @@ function tick(){
   const cd   = document.getElementById('countdown');
   const t    = TR[lang];
   if(diff <= 0){
-    cd.innerHTML = `<small>${t.countdown_label}</small>${t.countdown_underway}`;
+    cd.innerHTML = `<div style="font-size:1.05rem; font-weight:700; color:var(--accent); margin-top:4px;">${t.countdown_underway}</div>`;
     return;
   }
   if(diff < 30*60*1000){
-    cd.innerHTML = `<small>${t.countdown_window}</small>${t.countdown_underway}`;
+    cd.innerHTML = `<div style="font-size:1.05rem; font-weight:700; color:var(--accent); margin-top:4px;">${t.countdown_underway}</div>`;
     return;
   }
   const d = Math.floor(diff/86400000);
