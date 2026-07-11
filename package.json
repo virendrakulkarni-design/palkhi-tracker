@@ -1,0 +1,23 @@
+{
+  "name": "palkhi",
+  "version": "1.0.0",
+  "description": "",
+  "main": "palkhi_test.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/virendrakulkarni-design/palkhi-tracker.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/virendrakulkarni-design/palkhi-tracker/issues"
+  },
+  "homepage": "https://github.com/virendrakulkarni-design/palkhi-tracker#readme",
+  "dependencies": {
+    "puppeteer": "^25.3.0"
+  }
+}

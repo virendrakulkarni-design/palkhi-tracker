@@ -1318,9 +1318,63 @@ document.querySelectorAll('.langbtn').forEach(btn => {
   tick();
   setInterval(tick, 1000);
   fetchWeather();
+  fetchLiveStatus();
+  setInterval(fetchLiveStatus, 60000); // Check every minute
   // Init map after a short delay so DOM is ready
   setTimeout(initMap, 300);
 })();
+
+async function fetchLiveStatus() {
+  try {
+    // Fetch directly from the data branch to avoid polluting master
+    const res = await fetch('https://raw.githubusercontent.com/virendrakulkarni-design/palkhi-tracker/data/live_status.json');
+    if (!res.ok) return;
+    const data = await res.json();
+    
+    // Find liveUpdate message
+    if (data && data.configs && Array.isArray(data.configs)) {
+      const liveUpdate = data.configs.find(c => c.keyName === 'liveUpdate');
+      const isTrackEnabled = data.configs.find(c => c.keyName === 'isTrackEnabled');
+      
+      let msg = null;
+      if (liveUpdate && liveUpdate.keyValue && liveUpdate.keyValue.toLowerCase() !== 'null') {
+        msg = liveUpdate.keyValue;
+      }
+      
+      if (msg) {
+        showOfficialBanner(msg);
+      }
+      
+      // If tracking is closed, don't do anything else.
+      // If tracking was open, we would parse GPS coordinates here.
+    }
+  } catch (e) {
+    console.log("Could not fetch live status.");
+  }
+}
+
+function showOfficialBanner(msg) {
+  let banner = document.getElementById('officialBanner');
+  if (!banner) {
+    banner = document.createElement('div');
+    banner.id = 'officialBanner';
+    banner.style.cssText = 'background: #3E4095; color: #fff; padding: 12px 20px; text-align: center; font-weight: 600; font-size: 0.9rem; border-bottom: 2px solid #E8952B; display: flex; align-items: center; justify-content: center; gap: 8px;';
+    
+    const icon = document.createElement('span');
+    icon.textContent = 'ℹ️';
+    icon.style.fontSize = '1.2rem';
+    
+    const text = document.createElement('span');
+    text.id = 'officialBannerText';
+    
+    banner.appendChild(icon);
+    banner.appendChild(text);
+    
+    document.body.insertBefore(banner, document.body.firstChild);
+  }
+  document.getElementById('officialBannerText').textContent = "Official Update: " + msg;
+}
+
 </script>
 <!-- GoatCounter Analytics -->
 <script data-goatcounter="https://palkhitracker2026.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
