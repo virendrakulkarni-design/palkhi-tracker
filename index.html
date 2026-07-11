@@ -615,8 +615,8 @@ const TR = {
     tb_following:"🚩 अनुसरण करत आहात:", tb_mystage:"📍 माझा मुक्काम:", tb_notify:"🔔 प्रस्थानाच्या 30 मिनिटे आधी आठवण द्या",
     tb_notify_set:"🔔 स्मरण सेट (हे टॅब उघडे ठेवा)", tb_compact:"🗂 संक्षिप्त दृश्य", tb_share:"🖼 स्थिती शेअर करा",
     live_badge:"लाइव्ह · आषाढी वारी 2026", countdown_label:"पुढील प्रस्थान", countdown_window:"प्रस्थानाची वेळ",
-    countdown_underway:"प्रवास सुरू / प्रस्थान झाले",
-    cur_halt_label:"सध्याचा मुक्काम", next_halt_label:"पुढील प्रस्थान",
+    countdown_underway:"मार्गात (En route)",
+    cur_halt_label:"सध्याचा मुक्काम", cur_halt_enroute:"कडे मार्गावर", next_halt_label:"पुढील प्रस्थान",
     weather_title:"मार्गावरील हवामान", weather_cur:"पुणे · सध्याचा मुक्काम", weather_next:"सासवड · पुढील मुक्काम",
     weather_loading:"लाइव्ह हवामान लोड होत आहे…",
     weather_live:"Open-Meteo वरून लाइव्ह, अद्ययावत {t}.", weather_cached:"ऑफलाइन — शेवटची माहिती {t} ची दाखवली जात आहे.",
@@ -678,7 +678,7 @@ const PROCESSIONS = {
         note:{en:"Two-day halt at Palkhi Vithoba Mandir, Bhavani Peth. Departs ~2 AM on Jul 11 via Dive Ghat.",
               hi:"भवानी पेठ के पालखी विठोबा मंदिर में दो दिन का पड़ाव। 11 जुलाई तड़के लगभग 2 बजे दिवे घाट होते हुए प्रस्थान।",
               mr:"भवानी पेठेतील पालखी विठोबा मंदिरात दोन दिवसांचा मुक्काम. 11 जुलैला पहाटे सुमारे 2 वाजता दिवे घाटमार्गे प्रस्थान."}},
-      {id:"saswad", name:{en:"Saswad",hi:"सासवड",mr:"सासवड"}, dateKey:"~Jul 11", state:"current",
+      {id:"saswad", name:{en:"Saswad",hi:"सासवड",mr:"सासवड"}, dateKey:"~Jul 11", state:"enroute",
         note:{en:"Home of Sant Sopandev, Dnyaneshwar Maharaj's brother — a traditional overnight halt.",
               hi:"संत सोपानदेव, ज्ञानेश्वर महाराज के भाई, का गाँव — परंपरागत रात्रि पड़ाव।",
               mr:"संत सोपानदेव, ज्ञानेश्वर महाराजांचे बंधू, यांचे गाव — पारंपरिक रात्री मुक्काम."}},
@@ -729,7 +729,7 @@ const PROCESSIONS = {
         note:{en:"Two-day halt at Nivdungya Vithoba Mandir, Nana Peth. Departs ~2 AM on Jul 11 via Solapur Road.",
               hi:"नाना पेठ के निवडुंग्या विठोबा मंदिर में दो दिन का पड़ाव। 11 जुलाई तड़के लगभग 2 बजे सोलापुर रोड होते हुए प्रस्थान।",
               mr:"नाना पेठेतील निवडुंग्या विठोबा मंदिरात दोन दिवसांचा मुक्काम. 11 जुलैला पहाटे सुमारे 2 वाजता सोलापूर रस्त्याने प्रस्थान."}},
-      {id:"lonikalbhor", name:{en:"Loni Kalbhor",hi:"लोणी काळभोर",mr:"लोणी काळभोर"}, dateKey:"~Jul 11", state:"current",
+      {id:"lonikalbhor", name:{en:"Loni Kalbhor",hi:"लोणी काळभोर",mr:"लोणी काळभोर"}, dateKey:"~Jul 11", state:"enroute",
         note:{en:"First halt after leaving Pune, via Hadapsar Gadital.",
               hi:"पुणे छोड़ने के बाद पहला पड़ाव, हडपसर गडीताल होते हुए।", mr:"पुणे सोडल्यानंतरचा पहिला मुक्काम, हडपसर गडीतळमार्गे."}},
       {id:"indapur", name:{en:"Indapur",hi:"इंदापुर",mr:"इंदापूर"}, dateKey:"en route", state:"upcoming",
@@ -1037,6 +1037,7 @@ function renderPath(){
       <div class="halt-date">${s.dateKey ? (DATE_TR[s.dateKey]?.[lang] || s.dateKey) : ''}</div>
       ${s.state === 'done' ? '<div class="halt-flag">✓ done</div>' : ''}
       ${s.state === 'current' ? '<div class="halt-flag">📍 here now</div>' : ''}
+      ${s.state === 'enroute' ? '<div class="halt-flag">🚶 en route</div>' : ''}
       <div class="halt-note">${s.note[lang]}</div>
     `;
     el.addEventListener('click', () => {
@@ -1050,9 +1051,17 @@ function renderPath(){
 
 function updateStatus(){
   const data = PROCESSIONS[currentProcession];
-  const cur  = data.stages.find(s => s.state === 'current') || data.stages[0];
+  const cur  = data.stages.find(s => s.state === 'current' || s.state === 'enroute') || data.stages[0];
   const upcoming = data.stages.filter(s => s.state === 'upcoming');
   const next = upcoming[0];
+  
+  const lbl = document.getElementById('curHaltLabel');
+  if (cur.state === 'enroute') {
+    lbl.textContent = TR[lang].cur_halt_enroute;
+  } else {
+    lbl.textContent = TR[lang].cur_halt_label;
+  }
+
   document.getElementById('curHaltName').textContent = cur.name[lang];
   document.getElementById('curHaltNote').textContent = cur.note[lang];
   document.getElementById('nextHaltName').textContent = next ? next.name[lang] : '—';
