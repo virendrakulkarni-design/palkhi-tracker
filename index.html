@@ -940,8 +940,11 @@ function updateMapProcession(proc){
   });
   currentHaltMarker = L.marker(curCoords, {icon: pulseIcon, zIndexOffset:1000});
   const curNote = curStage.note[lang];
+  const popupTitle = curStage.state === 'enroute'
+    ? `<b>🚶 ${TR[lang].cur_halt_enroute} ${curStage.name[lang]}</b>`
+    : `<b>📍 ${curStage.name[lang]} — ${TR[lang].cur_halt_label}</b>`;
   currentHaltMarker.bindPopup(
-    `<b>📍 ${curStage.name[lang]} — Current halt</b>${curNote}`,
+    `${popupTitle}${curNote}`,
     {maxWidth:240}
   );
   currentHaltMarker.addTo(leafletMap);
