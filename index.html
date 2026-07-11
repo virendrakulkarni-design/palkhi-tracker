@@ -344,10 +344,10 @@
   .halt{display:flex; flex-direction:column; align-items:center; width:132px; flex-shrink:0; position:relative; text-align:center;}
   .halt-dot{width:22px; height:22px; border-radius:50%; background:var(--maroon-darker); border:2px solid var(--ivory-dim); z-index:2; display:flex; align-items:center; justify-content:center; font-size:11px; cursor:pointer;}
   .halt.done .halt-dot{background:var(--accent2); border-color:var(--accent2-light); color:var(--ivory);}
-  .halt.current .halt-dot{background:var(--accent); border-color:var(--accent-light); box-shadow:0 0 0 5px rgba(232,149,43,0.22); width:26px; height:26px;}
+  .halt.current .halt-dot, .halt.enroute .halt-dot{background:var(--accent); border-color:var(--accent-light); box-shadow:0 0 0 5px rgba(232,149,43,0.22); width:26px; height:26px;}
   .halt.mine .halt-dot{box-shadow:0 0 0 4px rgba(245,192,101,0.55);}
   .halt-name{margin-top:10px; font-size:0.82rem; font-weight:600; color:var(--ivory); cursor:pointer;}
-  .halt.current .halt-name{color:var(--accent-light);}
+  .halt.current .halt-name, .halt.enroute .halt-name{color:var(--accent-light);}
   .halt-date{font-size:0.7rem; color:var(--ivory-dim); margin-top:2px;}
   .halt-flag{font-size:0.6rem; color:var(--accent2-light); margin-top:4px; font-weight:600; letter-spacing:0.4px;}
   .halt-mine-tag{font-size:0.6rem; color:var(--accent-light); margin-top:3px; font-weight:600;}
