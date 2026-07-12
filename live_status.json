@@ -48,12 +48,12 @@
     {
       "id": "10",
       "keyName": "popupTitle",
-      "keyValue": "Live Tracking Updates"
+      "keyValue": "Tracking is Closed for 2026."
     },
     {
       "id": "11",
       "keyName": "liveUpdate",
-      "keyValue": "Tukaram Maharaj Palkhi live tracking has started."
+      "keyValue": "Both Palkhis have exited Pune City Jurisdiction. Tracking is Closed."
     },
     {
       "id": "12",
@@ -118,5 +118,5 @@
   ],
   "dnyaneshwar": null,
   "tukaram": null,
-  "lastUpdated": "2026-07-12T06:21:59.325Z"
+  "lastUpdated": "2026-07-12T08:39:05.787Z"
 }
